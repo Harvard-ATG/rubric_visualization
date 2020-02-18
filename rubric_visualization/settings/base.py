@@ -11,24 +11,16 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import logging
+from .secure import SECURE_SETTINGS
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'keep_it_secret*keep_it_safe'
+SECRET_KEY = SECURE_SETTINGS.get('django_secret_key', 'changeme')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
-# Application definition
+DEBUG = SECURE_SETTINGS.get('enable_debug', False)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -67,19 +59,20 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'rubric_visualization.wsgi.application'
-
-
 # Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': SECURE_SETTINGS.get('db_default_name', 'rubric_visualization'),
+        'USER': SECURE_SETTINGS.get('db_default_user', 'postgres'),
+        'PASSWORD': SECURE_SETTINGS.get('db_default_password'),
+        'HOST': SECURE_SETTINGS.get('db_default_host', '127.0.0.1'),
+        'PORT': SECURE_SETTINGS.get('db_default_port', 5432),  # Default postgres port
     }
 }
 
+WSGI_APPLICATION = 'rubric_visualization.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -118,3 +111,59 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'http_static'))
+
+# Sessions
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Logging 
+
+_DEFAULT_LOG_LEVEL = SECURE_SETTINGS.get('log_level', logging.DEBUG)
+_LOG_ROOT = SECURE_SETTINGS.get('log_root', '')  # Default to current directory
+
+LOGGING_CONFIG = None
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s\t%(asctime)s.%(msecs)03dZ\t%(name)s:%(lineno)s\t%(message)s',
+            'datefmt': '%Y-%m-%dT%H:%M:%S'
+        },
+        'simple': {
+            'format': '%(levelname)s\t%(name)s:%(lineno)s\t%(message)s',
+        }
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'root': {
+        'level': logging.WARNING,
+        'handlers': ['default'],
+    },
+    'handlers': {
+        # Log to a file by default that can be rotated by logrotate
+        'default': {
+            'class': 'logging.handlers.WatchedFileHandler',
+            'level': _DEFAULT_LOG_LEVEL,
+            'formatter': 'verbose',
+            'filename': os.path.join(_LOG_ROOT, 'django-rubric_visualization.log'),
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': _DEFAULT_LOG_LEVEL,
+            'formatter': 'simple',
+            'filters': ['require_debug_true'],
+        },
+    },
+    'loggers': {
+    }
+}
