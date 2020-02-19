@@ -1,5 +1,9 @@
 # Rubric Visualization
 
+## Requirements
+- Python 3
+- Node v12.15.0
+
 ## Quickstart
 
 Setup python environment:
@@ -22,4 +26,8 @@ $ pip install -r requirements.txt
 $ cp -v rubric_visualization/settings/secure.py.example rubric_visualization/settings/secure.py
 $ ./manage.py migrate
 $ ./manage.py runserver
+# new terminal at project root
+$ cd frontend && npm install
+$ npm run watch
 ```
+Then navigate to where Django is serving content.
