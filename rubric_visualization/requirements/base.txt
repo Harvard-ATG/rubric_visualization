@@ -1,0 +1,5 @@
+Django==3.0.3
+psycopg2==2.8.4
+django-redis-cache==2.1.0
+redis==3.4.1
+hiredis==1.0.1
