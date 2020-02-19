@@ -2,6 +2,6 @@
 .vscode
 *~
 .pyc
-__pycache__
+__pycache__/
 /rubric_visualization/settings/secure.py
 /frontend/node_modules
