@@ -4,3 +4,4 @@
 .pyc
 __pycache__
 /rubric_visualization/settings/secure.py
+/node_modules
