@@ -19,6 +19,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = SECURE_SETTINGS.get('django_secret_key', 'changeme')
 
+# Canvas SDK settings
+# SDK_OAUTH_TOKEN = SECURE_SETTINGS.OAUTH_TOKEN
+# CANVAS_URL = SECURE_SETTINGS.CANVAS_URL
+SDK_OAUTH_TOKEN = SECURE_SETTINGS.get('OAUTH_TOKEN', '')
+CANVAS_URL = SECURE_SETTINGS.get('CANVAS_URL', '')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = SECURE_SETTINGS.get('enable_debug', False)
 
@@ -29,7 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'frontend.apps.FrontendConfig'
+    'frontend.apps.FrontendConfig',
+    'rubric_data.apps.RubricDataConfig',
 ]
 
 MIDDLEWARE = [

@@ -5,3 +5,5 @@
 __pycache__
 /rubric_visualization/settings/secure.py
 /frontend/node_modules
+cert.pem
+key.pem

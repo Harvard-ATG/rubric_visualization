@@ -3,3 +3,4 @@ psycopg2==2.8.4
 django-redis-cache==2.1.0
 redis==3.4.1
 hiredis==1.0.1
+git+https://github.com/penzance/canvas_python_sdk@v1.2.0#egg=canvas_python_sdk==1.2.0

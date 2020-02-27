@@ -31,3 +31,10 @@ $ cd frontend && npm install
 $ npm run watch
 ```
 Then navigate to where Django is serving content.
+
+If you want to run a dev server with SSL, install pip install local.txt, [generate
+local cert and pem files](https://woile.github.io/posts/local-https-development-in-python-with-mkcert/) and then:
+
+```sh
+./manage.py runsslserver --certificate <cert-file-location> --key <pem-file-location>
+```
