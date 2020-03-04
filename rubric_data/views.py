@@ -19,14 +19,14 @@ def get_some_data(request):
     students = get_students_list(request_context, course)
     assignments = get_assignments_list(request_context, course)
     assignment_ids = [assignment['id'] for assignment in assignments]
-    submissions = get_submissions_with_rubric_assessments(
-        request_context,
-        course,
-        assignment_ids
-        )
+    # submissions = get_submissions_with_rubric_assessments(
+    #     request_context,
+    #     course,
+    #     assignment_ids
+    #     )
     data = {
         'assignments': assignments,
-        'submissions': submissions,
+        'submissions': [],
         'students': students,
     }
     

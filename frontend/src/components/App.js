@@ -2,48 +2,37 @@ import React, { Component } from "react";
 import { render } from "react-dom";
 import './App.css';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: {'assignments': [], 'submissions': [], 'students': []},
-      loaded: false,
-      placeholder: "Loading"
-    };
-  }
+const App = props => {
+  const [appState, setAppState] = React.useState({
+    data: {'assignments': [], 'submissions': [], 'students': []},
+    loaded: false,
+    placeholder: "Loading"
+  });
   
-  componentDidMount() {
+  React.useEffect(() => {
     fetch("data/some_data")
       .then(response => {
         if (response.status > 400) {
-          return this.setState(() => {
-            return { placeholder: "Something went wrong!" };
-          });
+          return setAppState({...appState, placeholder: "Something went wrong!"});
         }
         return response.json();
       })
       .then(data => {
-        this.setState(() => {
-          return {
-            data,
-            loaded: true
-          };
-        });
+        return setAppState({...appState, data, loaded: true});
       });
-  }
-
-  render() {
-    let studentList = (this.state.loaded ?
-      <ul>
-        {this.state.data.students.map(student => {
-          return (
-            <li key={student.id}>
-              {student.sortable_name}
-            </li>
-          );
-        })}
-      </ul> :
-      <p>{this.state.placeholder}</p>);
+  }, []);
+  
+  const studentList = (appState.loaded ?
+    <ul>
+      {appState.data.students.map(student => {
+        return (
+          <li key={student.id}>
+            {student.sortable_name}
+          </li>
+        );
+      })}
+    </ul> :
+    <p>{appState.placeholder}</p>);
     
     return (
       <div>
@@ -52,7 +41,6 @@ class App extends Component {
         {studentList}
       </div>
     );
-  }
 }
 
 export default App;
