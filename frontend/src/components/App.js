@@ -1,15 +1,15 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import { render } from "react-dom";
 import './App.css';
 
 const App = props => {
-  const [appState, setAppState] = React.useState({
+  const [appState, setAppState] = useState({
     data: {'assignments': [], 'submissions': [], 'students': []},
     loaded: false,
     placeholder: "Loading"
   });
   
-  React.useEffect(() => {
+  useEffect(() => {
     fetch("data/some_data")
       .then(response => {
         if (response.status > 400) {
@@ -34,13 +34,13 @@ const App = props => {
     </ul> :
     <p>{appState.placeholder}</p>);
     
-    return (
-      <div>
-        <p>Here is the react app.</p>
-        <p>And Here is the value from the django template {window.django.randomValue}</p>
-        {studentList}
-      </div>
-    );
+  return (
+    <div>
+      <p>Here is the react app.</p>
+      <p>And Here is the value from the django template {window.django.randomValue}</p>
+      {studentList}
+    </div>
+  );
 }
 
 export default App;
