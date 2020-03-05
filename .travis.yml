@@ -12,6 +12,7 @@ install:
     - nvm install 12.15.0
     - cd frontend && npm install
 script:
+    - cd ..
     - python manage.py migrate --noinput
     - python manage.py test
     - cd frontend && npm run build
