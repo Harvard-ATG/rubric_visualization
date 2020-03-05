@@ -9,6 +9,9 @@ install:
     - pip install -r requirements.txt
     - createdb rubric_visualization --owner=postgres
     - cp -vf rubric_visualization/settings/secure.py.example rubric_visualization/settings/secure.py
+    - nvm install 12.15.0
+    - cd frontend && npm install
 script:
     - python manage.py migrate --noinput
     - python manage.py test
+    - cd frontend && npm run build
