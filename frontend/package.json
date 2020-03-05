@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --config ./jest.config.json",
     "dev": "webpack --mode development ./src/index.js --output ./static/frontend/main.js",
     "build": "webpack --mode production ./src/index.js --output ./static/frontend/main.js",
     "watch": "watch 'npm run dev' ./src"
@@ -18,6 +18,7 @@
     "@babel/preset-react": "^7.8.3",
     "babel-loader": "^8.0.6",
     "css-loader": "^3.4.2",
+    "jest": "^25.1.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "style-loader": "^1.1.3",
