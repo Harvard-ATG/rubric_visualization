@@ -38,3 +38,17 @@ local cert and pem files](https://woile.github.io/posts/local-https-development-
 ```sh
 ./manage.py runsslserver --certificate <cert-file-location> --key <pem-file-location>
 ```
+
+
+## Testing
+
+Testing Djano:
+
+```sh
+$ ./manage.py test
+```
+
+Testing React:
+```sh
+$ cd frontend && npm run test
+```

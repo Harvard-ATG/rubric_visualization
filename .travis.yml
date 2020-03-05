@@ -17,3 +17,4 @@ script:
     - python manage.py test
     - cd frontend && npm run build
     - npm run test
+    - npx eslint .
