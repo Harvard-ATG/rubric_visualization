@@ -84,3 +84,7 @@ def get_submissions_with_rubric_assessments(request_context, course_id, assignme
             "submissions": list_data,
         })
     return results
+
+
+def function_for_test_example():
+    return 2
