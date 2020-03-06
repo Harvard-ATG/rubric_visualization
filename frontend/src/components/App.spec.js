@@ -14,7 +14,7 @@ describe('My Test Suite', () => {
     const mockJsonPromise = Promise.resolve(mockSuccessResponse);
     const mockFetchPromise = Promise.resolve({
       json: () => mockJsonPromise,
-    })
+    });
     global.fetch = jest.fn().mockImplementation(() => mockFetchPromise);
     global.django = {
       randomValue: 42,

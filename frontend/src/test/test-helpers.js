@@ -1,6 +1,5 @@
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import { act } from 'react-dom/test-utils';
 
 configure({ adapter: new Adapter() });
 
@@ -15,8 +14,7 @@ export const mountToDoc = (reactElm) => {
     wrapper.id = 'app';
     document.body.appendChild(wrapper);
   }
-	
-	const	container = mount(reactElm);
+  const container = mount(reactElm);
   wrapper.innerHTML = '';
   wrapper.appendChild(container.getDOMNode());
   return container;
