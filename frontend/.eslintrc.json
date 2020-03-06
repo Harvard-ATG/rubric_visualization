@@ -8,7 +8,9 @@
     "extends": "airbnb",
     "globals": {
         "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
+        "SharedArrayBuffer": "readonly",
+        "jsdom": true,
+        "done": true
     },
     "parserOptions": {
         "ecmaFeatures": {
@@ -21,6 +23,7 @@
         "react"
     ],
     "rules": {
-        "react/jsx-filename-extension": [1, {"extensions": [".js", ".jsx"] }]
+        "react/jsx-filename-extension": [1, {"extensions": [".js", ".jsx"] }],
+        "import/no-extraneous-dependencies": [1, {"devDependencies": true}]
     }
 }
