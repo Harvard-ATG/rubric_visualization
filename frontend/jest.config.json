@@ -1,3 +1,6 @@
 {
-  "testRegex": "((\\.|/*.)(spec))\\.js?$"
+  "testRegex": "((\\.|/*.)(spec))\\.js?$",
+  "moduleNameMapper": {
+      "\\.(css|)$": "./src/test/__mocks__/styleMock.js"
+  }
 }
