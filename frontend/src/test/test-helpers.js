@@ -20,4 +20,10 @@ export const mountToDoc = (reactElm) => {
   return container;
 };
 
-export const helperPlaceholer = () => ('this is a helper');
+export const mockFetchSuccess = (data) => {
+  const mockJsonPromise = Promise.resolve(data);
+  const mockFetchPromise = Promise.resolve({
+    json: () => mockJsonPromise,
+  });
+  return jest.fn().mockImplementation(() => mockFetchPromise);
+};

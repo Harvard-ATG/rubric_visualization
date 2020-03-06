@@ -1,6 +1,6 @@
 import React from 'react';
 import axe from 'axe-core';
-import { mountToDoc } from '../test/test-helpers';
+import { mockFetchSuccess, mountToDoc } from '../test/test-helpers';
 
 import App from './App';
 
@@ -10,12 +10,7 @@ describe('My Test Suite', () => {
   });
 
   it('Tests with axe-core', () => {
-    const mockSuccessResponse = { data: { assignments: [], submissions: [], students: ['bill', 'sue'] } };
-    const mockJsonPromise = Promise.resolve(mockSuccessResponse);
-    const mockFetchPromise = Promise.resolve({
-      json: () => mockJsonPromise,
-    });
-    global.fetch = jest.fn().mockImplementation(() => mockFetchPromise);
+    global.fetch = mockFetchSuccess({ data: { assignments: [], submissions: [], students: ['bill', 'sue'] } });
     global.django = {
       randomValue: 42,
     };
