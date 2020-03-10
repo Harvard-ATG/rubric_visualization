@@ -1,0 +1,20 @@
+sudo: false
+language: python
+python: ["3.6"]
+env:
+    - DJANGO_SETTINGS_MODULE=rubric_visualization.settings.test
+services:
+  - postgresql
+install:
+    - pip install -r requirements.txt
+    - createdb rubric_visualization --owner=postgres
+    - cp -vf rubric_visualization/settings/secure.py.example rubric_visualization/settings/secure.py
+    - nvm install 12.15.0
+    - cd frontend && npm install
+script:
+    - cd ..
+    - python manage.py migrate --noinput
+    - python manage.py test
+    - cd frontend && npm run build
+    - npm run test
+    - npx eslint .
