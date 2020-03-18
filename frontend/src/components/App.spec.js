@@ -11,12 +11,12 @@ describe('My Test Suite', () => {
 
   it('Tests with axe-core', (done) => {
     global.fetch = mockFetchSuccess({
-        assignments: [],
-        submissions: [],
-        students: [
-          { id: 1, sortable_name: 'bill' },
-          { id: 2, sortable_name: 'sue' },
-        ],
+      assignments: [],
+      submissions: [],
+      students: [
+        { id: 1, sortable_name: 'bill' },
+        { id: 2, sortable_name: 'sue' },
+      ],
     });
     global.django = {
       randomValue: 42,
