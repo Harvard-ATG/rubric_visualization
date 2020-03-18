@@ -9,16 +9,14 @@ describe('My Test Suite', () => {
     expect(true).toEqual(true);
   });
 
-  it('Tests with axe-core', () => {
+  it('Tests with axe-core', (done) => {
     global.fetch = mockFetchSuccess({
-      data: {
         assignments: [],
         submissions: [],
         students: [
           { id: 1, sortable_name: 'bill' },
-          { id: 1, sortable_name: 'sue' },
+          { id: 2, sortable_name: 'sue' },
         ],
-      },
     });
     global.django = {
       randomValue: 42,

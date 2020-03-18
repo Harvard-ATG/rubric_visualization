@@ -15,6 +15,7 @@ export const mountToDoc = (reactElm) => {
     document.body.appendChild(wrapper);
   }
   const container = mount(reactElm);
+  // container.update();
   wrapper.innerHTML = '';
   wrapper.appendChild(container.getDOMNode());
   return container;
