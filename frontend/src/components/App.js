@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import '@instructure/canvas-theme'
 import './App.css';
+import TopNav from './TopNav/TopNav.js'
 
 const App = () => {
   const [appState, setAppState] = useState({
@@ -33,12 +35,7 @@ const App = () => {
 
   return (
     <div>
-      <p>Here is the react app.</p>
-      <p>
-        And Here is the value from the django template
-        {window.django.randomValue}
-      </p>
-      {studentList}
+      <TopNav/>
     </div>
   );
 };

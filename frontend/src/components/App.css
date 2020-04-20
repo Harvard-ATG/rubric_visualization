@@ -1,3 +1,21 @@
-p {
-    color: blue;
+.card-headline {
+    padding: .25rem;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.filter-bar {
+    background-color: #F5F5F5;
+    padding: .65rem;
+}
+
+.rubric-title {
+    font-size: 1.375rem;
+}
+
+.select-label {
+    margin-right: 1rem;
+}
+
+.vis-card {
+    margin-top: 1.65rem;
 }
