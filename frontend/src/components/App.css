@@ -1,6 +1,5 @@
-.card-headline {
-    padding: .25rem;
-    border-bottom: 1px solid #F5F5F5;
+.contained-area {
+    padding: 2rem;
 }
 
 .filter-bar {
@@ -8,12 +7,9 @@
     padding: .65rem;
 }
 
-.rubric-title {
-    font-size: 1.375rem;
-}
-
-.select-label {
-    margin-right: 1rem;
+.section-title {
+    padding: .25rem;
+    border-bottom: 1px solid #F5F5F5;
 }
 
 .vis-card {

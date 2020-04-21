@@ -3,6 +3,8 @@ import React from 'react';
 import { Flex } from '@instructure/ui-flex/lib/Flex';
 import { View } from '@instructure/ui-view/lib/View';
 import { Grid } from '@instructure/ui-grid/lib/Grid';
+import { Text } from '@instructure/ui-text/lib/Text';
+import { List } from '@instructure/ui-list/lib/List';
 
 const AssignmentCard = (props) => {
   return (
@@ -12,23 +14,40 @@ const AssignmentCard = (props) => {
         padding="small"
         shadow="resting"
       >
-        <div className="card-headline">
+        <div className="section-title">
           <Flex justifyItems="space-between">
             <Flex.Item>
-              <div className="rubric-title">
+              <Text size="large" weight="light">
                 { props.assignmentName }
-              </div>
+              </Text>
             </Flex.Item>
-            <Flex.Item>Due { props.dueDate } Days ago</Flex.Item>
+            <Flex.Item>
+              <Text weight="light">
+                Due { props.dueDate } Days ago
+              </Text>
+            </Flex.Item>
           </Flex>
         </div>
         <Grid>
           <Grid.Row>
             <Grid.Col>
-              <p>vis</p>
+              <p>This is where the vis goes</p>
             </Grid.Col>
             <Grid.Col>
-              <p>Observations</p>
+              <div className="contained-area">
+                <div className="section-title">
+                  <Text>
+                    Observations
+                  </Text>
+                </div>
+                <List itemSpacing="medium">
+                  {props.observations.map((observation, index) => (
+                      <List.Item key={`observation-${props.assignmentName}-${index}`}>
+                        { observation }
+                      </List.Item>
+                  ))}
+                </List>
+              </div>
             </Grid.Col>
           </Grid.Row>
         </Grid>
