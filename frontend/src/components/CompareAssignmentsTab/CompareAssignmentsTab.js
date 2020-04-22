@@ -3,11 +3,10 @@ import { Flex } from '@instructure/ui-flex/lib/Flex'
 import { View } from '@instructure/ui-view/lib/View'
 import { Grid } from '@instructure/ui-grid/lib/Grid'
 
-import Selector from '../Selector/Selector.js'
-import AssignmentCard from '../VisCards/AssignmentCard.js'
+import Selector from '../Selector/Selector'
+import AssignmentCard from '../VisCards/AssignmentCard'
 
-const CompareAssignmentsTab = (props) => {
-  
+const CompareAssignmentsTab = () => {
   return (
     <div>
       <Flex justifyItems="space-between" margin="0 0 medium">

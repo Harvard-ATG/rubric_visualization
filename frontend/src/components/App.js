@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import '@instructure/canvas-theme'
+import theme from '@instructure/canvas-theme'
 import './App.css';
-import TopNav from './TopNav/TopNav.js'
+import TopNav from './TopNav/TopNav'
 
 const App = () => {
   const [appState, setAppState] = useState({

@@ -1,10 +1,10 @@
 import React from 'react';
-import { AppNav } from '@instructure/ui-navigation/lib/AppNav'
-import { Tabs } from '@instructure/ui-tabs/lib/Tabs'
+import { AppNav } from '@instructure/ui-navigation/lib/AppNav';
+import { Tabs } from '@instructure/ui-tabs/lib/Tabs';
 
-import CompareAssignmentsTab from '../CompareAssignmentsTab/CompareAssignmentsTab.js'
+import CompareAssignmentsTab from '../CompareAssignmentsTab/CompareAssignmentsTab';
 
-const TopNav = (props) => {
+const TopNav = () => {
   return (
     <Tabs
       margin="large auto"

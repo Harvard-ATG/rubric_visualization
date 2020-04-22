@@ -10,7 +10,7 @@ describe('My Test Suite', () => {
   });
 
   it('Tests with axe-core', async (done) => {
-    jest.setTimeout(30000);
+    jest.setTimeout(10000);
     global.fetch = await mockFetchSuccess({
       assignments: [],
       submissions: [],

@@ -8,7 +8,7 @@ let wrapper;
 export const mountToDoc = async (reactElm) => {
   if (!document) {
     // Set up a basic DOM
-    global.document = jsdom('<!doctype html><html><body></body></html>');
+    global.document = jsdom('<!doctype html><html dir="ltr"><body></body></html>');
   }
   if (!wrapper) {
     wrapper = document.createElement('div');

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { Flex } from '@instructure/ui-flex/lib/Flex';
 import { View } from '@instructure/ui-view/lib/View';
@@ -55,5 +56,11 @@ const AssignmentCard = (props) => {
     </div>
   );
 };
+
+AssignmentCard.propTypes = {
+  assignmentName: PropTypes.string.isRequired,
+  dueDate: PropTypes.number.isRequired,
+  observations: PropTypes.array.isRequired
+}
 
 export default AssignmentCard;
