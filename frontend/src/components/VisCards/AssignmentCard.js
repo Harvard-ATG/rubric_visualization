@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Flex } from '@instructure/ui-flex/lib/Flex';
 import { View } from '@instructure/ui-view/lib/View';
@@ -8,6 +9,8 @@ import { Text } from '@instructure/ui-text/lib/Text';
 import { List } from '@instructure/ui-list/lib/List';
 
 const AssignmentCard = (props) => {
+  const { assignmentName, dueDate, observations } = props;
+
   return (
     <div className="vis-card">
       <View
@@ -19,12 +22,16 @@ const AssignmentCard = (props) => {
           <Flex justifyItems="space-between">
             <Flex.Item>
               <Text size="large" weight="light">
-                { props.assignmentName }
+                { assignmentName }
               </Text>
             </Flex.Item>
             <Flex.Item>
               <Text weight="light">
-                Due { props.dueDate } Days ago
+                Due
+                {' '}
+                { dueDate }
+                {' '}
+                Days ago
               </Text>
             </Flex.Item>
           </Flex>
@@ -42,10 +49,10 @@ const AssignmentCard = (props) => {
                   </Text>
                 </div>
                 <List itemSpacing="medium">
-                  {props.observations.map((observation, index) => (
-                      <List.Item key={`observation-${props.assignmentName}-${index}`}>
-                        { observation }
-                      </List.Item>
+                  {observations.map((observation) => (
+                    <List.Item key={uuidv4()}>
+                      { observation }
+                    </List.Item>
                   ))}
                 </List>
               </div>
@@ -60,7 +67,7 @@ const AssignmentCard = (props) => {
 AssignmentCard.propTypes = {
   assignmentName: PropTypes.string.isRequired,
   dueDate: PropTypes.number.isRequired,
-  observations: PropTypes.array.isRequired
-}
+  observations: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
 
 export default AssignmentCard;

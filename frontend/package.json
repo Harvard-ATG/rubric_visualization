@@ -24,8 +24,10 @@
     "@instructure/ui-tabs": "^6.24.0",
     "@instructure/ui-text": "^6.24.0",
     "@instructure/ui-view": "^6.24.0",
+    "prop-types": "^15.7.2",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
