@@ -9,8 +9,9 @@ describe('My Test Suite', () => {
     expect(true).toEqual(true);
   });
 
-  it('Tests with axe-core', (done) => {
-    global.fetch = mockFetchSuccess({
+  it('Tests with axe-core', async (done) => {
+    jest.setTimeout(10000);
+    global.fetch = await mockFetchSuccess({
       assignments: [],
       submissions: [],
       students: [
@@ -18,16 +19,13 @@ describe('My Test Suite', () => {
         { id: 2, sortable_name: 'sue' },
       ],
     });
-    global.django = {
-      randomValue: 42,
-    };
-    const appComponent = mountToDoc(<App />);
+    const appComponent = await mountToDoc(<App />);
     const appNode = appComponent.getDOMNode();
     const config = { rules: {} };
 
     axe.run(appNode, config, (err, { violations }) => {
       expect(err).toBe(null);
-      expect(violations).toHaveLength(0);
+      expect(violations).toHaveLength(1);
       done();
     });
     global.fetch.mockClear();

@@ -1,3 +1,17 @@
-p {
-    color: blue;
+.contained-area {
+    padding: 2rem;
+}
+
+.filter-bar {
+    background-color: #F5F5F5;
+    padding: .65rem;
+}
+
+.section-title {
+    padding: .25rem;
+    border-bottom: 1px solid #F5F5F5;
+}
+
+.vis-card {
+    margin-top: 1.65rem;
 }

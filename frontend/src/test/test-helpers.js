@@ -1,21 +1,25 @@
 import { configure, mount } from 'enzyme';
+import { act } from 'react-dom/test-utils';
 import Adapter from 'enzyme-adapter-react-16';
 
 configure({ adapter: new Adapter() });
 
 let wrapper;
-export const mountToDoc = (reactElm) => {
+export const mountToDoc = async (reactElm) => {
   if (!document) {
     // Set up a basic DOM
-    global.document = jsdom('<!doctype html><html><body></body></html>');
+    global.document = jsdom('<!doctype html><html dir="ltr"><body></body></html>');
   }
   if (!wrapper) {
     wrapper = document.createElement('div');
     wrapper.id = 'app';
     document.body.appendChild(wrapper);
   }
-  const container = mount(reactElm);
-  // container.update();
+  let container;
+  await act(async () => {
+    container = mount(reactElm);
+  });
+  container.setProps();
   wrapper.innerHTML = '';
   wrapper.appendChild(container.getDOMNode());
   return container;

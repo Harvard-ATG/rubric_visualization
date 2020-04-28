@@ -13,8 +13,21 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@instructure/canvas-theme": "^6.24.0",
+    "@instructure/ui-buttons": "^6.24.0",
+    "@instructure/ui-flex": "^6.24.0",
+    "@instructure/ui-grid": "^6.24.0",
+    "@instructure/ui-list": "^6.24.0",
+    "@instructure/ui-navigation": "^6.24.0",
+    "@instructure/ui-select": "^6.24.0",
+    "@instructure/ui-simple-select": "^6.24.0",
+    "@instructure/ui-tabs": "^6.24.0",
+    "@instructure/ui-text": "^6.24.0",
+    "@instructure/ui-view": "^6.24.0",
+    "prop-types": "^15.7.2",
     "react": "^16.12.0",
-    "react-dom": "^16.12.0"
+    "react-dom": "^16.12.0",
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
