@@ -19,5 +19,6 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('data/', include('rubric_data.urls')),
+    path('oauth/', include('canvas_oauth.urls')),
     path('', include('frontend.urls'))
 ]

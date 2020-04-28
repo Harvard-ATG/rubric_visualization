@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'canvas_oauth.apps.CanvasOAuthConfig',
     'frontend.apps.FrontendConfig',
     'rubric_data.apps.RubricDataConfig',
 ]
@@ -47,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'canvas_oauth.middleware.OAuthMiddleware',
 ]
 
 ROOT_URLCONF = 'rubric_visualization.urls'
@@ -173,5 +175,14 @@ LOGGING = {
         },
     },
     'loggers': {
+        'canvas_oauth': {
+             'level': logging.DEBUG,
+             'handlers': ['default', 'console'],
+             'propagate': False,
+        }
     }
 }
+
+CANVAS_OAUTH_CLIENT_ID = SECURE_SETTINGS.get('canvas_oauth_client_id')
+CANVAS_OAUTH_CLIENT_SECRET = SECURE_SETTINGS.get('canvas_oauth_client_secret')
+CANVAS_OAUTH_CANVAS_DOMAIN = SECURE_SETTINGS.get('canvas_domain')
