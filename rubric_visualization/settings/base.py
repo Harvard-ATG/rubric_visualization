@@ -19,12 +19,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = SECURE_SETTINGS.get('django_secret_key', 'changeme')
 
-# Canvas SDK settings
-# SDK_OAUTH_TOKEN = SECURE_SETTINGS.OAUTH_TOKEN
-# CANVAS_URL = SECURE_SETTINGS.CANVAS_URL
-SDK_OAUTH_TOKEN = SECURE_SETTINGS.get('OAUTH_TOKEN', '')
-CANVAS_URL = SECURE_SETTINGS.get('CANVAS_URL', '')
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = SECURE_SETTINGS.get('enable_debug', False)
 
@@ -179,10 +173,35 @@ LOGGING = {
              'level': logging.DEBUG,
              'handlers': ['default', 'console'],
              'propagate': False,
-        }
+        },
+        'frontend': {
+             'level': logging.DEBUG,
+             'handlers': ['default', 'console'],
+             'propagate': False,
+        },
+        'rubric_data': {
+             'level': logging.DEBUG,
+             'handlers': ['default', 'console'],
+             'propagate': False,
+        },
     }
 }
 
+# Canvas domain for authorizing and retrieving rubric data
+CANVAS_DOMAIN = SECURE_SETTINGS.get('canvas_domain', 'https://canvas.localhost')
+
+# Settings for canvas_oauth (https://github.com/harvard-university-icommons/django-canvas-oauth)
+# This library initiates the oauth2 flow for a user to obtain a token for API requests.
+CANVAS_OAUTH_CANVAS_DOMAIN = CANVAS_DOMAIN
 CANVAS_OAUTH_CLIENT_ID = SECURE_SETTINGS.get('canvas_oauth_client_id')
 CANVAS_OAUTH_CLIENT_SECRET = SECURE_SETTINGS.get('canvas_oauth_client_secret')
-CANVAS_OAUTH_CANVAS_DOMAIN = SECURE_SETTINGS.get('canvas_domain')
+
+# Settings for the canvas_sdk (https://github.com/penzance/canvas_python_sdk)
+# These settings can be passed to the sdk method functions or when creating
+# an instance of canvas_sdk.client.RequestContext().
+# Note: the `auth_token` is excluded because it should be obtained for each user.
+CANVAS_SDK_SETTINGS = {
+    'base_api_url': f"https://{CANVAS_DOMAIN}/api",
+    'max_retries': 3,
+    'per_page': 100,
+}

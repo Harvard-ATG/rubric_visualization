@@ -1,6 +1,9 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from canvas_oauth.oauth import get_oauth_token
+from rubric_visualization.decorators import require_canvas_oauth_token
 
-def index(request):
-    access_token = get_oauth_token(request)
+
+@login_required
+@require_canvas_oauth_token
+def index(request, **kwargs):
     return render(request, 'frontend/index.html')

@@ -1,6 +1,7 @@
 SECURE_SETTINGS = {
     'django_secret_key': 'keep-it-secret-keep-it-safe',
     'enable_debug': True,
-    'OAUTH_TOKEN': '',
-    'CANVAS_URL': ''
+    'canvas_oauth_client_id': '', # Canvas developer key
+    'canvas_oauth_client_secret': '', # Canvas developer key
+    'canvas_domain': '',
 }

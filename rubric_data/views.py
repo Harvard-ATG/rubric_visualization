@@ -1,24 +1,33 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
-
+from canvas_oauth.oauth import get_oauth_token
+from canvas_sdk.exceptions import CanvasAPIError
 from canvas_sdk.methods import submissions, assignments, courses
 from canvas_sdk.utils import get_all_list_data
 from canvas_sdk import RequestContext
+from rubric_visualization.decorators import api_login_required, api_canvas_oauth_token_exception
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
+@api_canvas_oauth_token_exception
+@api_login_required
 def get_some_data(request):
-    request_context = RequestContext(
-        settings.SDK_OAUTH_TOKEN,
-        settings.CANVAS_URL,
-        per_page=100
-        )
-        
+    access_token = get_oauth_token(request)
+    request_context = RequestContext(**settings.CANVAS_SDK_SETTINGS, auth_token=access_token)
     course = 58055
-    
-    students = get_students_list(request_context, course)
-    assignments = get_assignments_list(request_context, course)
-    assignment_ids = [assignment['id'] for assignment in assignments]
+
+    try:
+        students = get_students_list(request_context, course)
+        assignments = get_assignments_list(request_context, course)
+    except CanvasAPIError as e:
+        logger.exception("Canvas API error")
+        msg = "Canvas API error {status_code}".format(status_code=e.status_code)
+        return JsonResponse({"message": msg}, status=500)
+
+    # assignment_ids = [assignment['id'] for assignment in assignments]
     # submissions = get_submissions_with_rubric_assessments(
     #     request_context,
     #     course,
@@ -29,7 +38,7 @@ def get_some_data(request):
         'submissions': [],
         'students': students,
     }
-    
+
     return JsonResponse(data)
 
 
