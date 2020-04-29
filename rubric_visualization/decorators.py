@@ -1,4 +1,5 @@
 from django.http import JsonResponse
+from functools import wraps
 from canvas_oauth.oauth import get_oauth_token
 from canvas_oauth.exceptions import MissingTokenError, CanvasOAuthError
 
@@ -8,13 +9,12 @@ def api_login_required(viewfunc):
     Decorator that returns a 403 for unauthenticated API requests.
     """
 
+    @wraps(viewfunc)
     def wrap(request, *args, **kwargs):
         if not request.user.is_authenticated:
             return JsonResponse({"message": "Authentication required"}, status=403)
         return viewfunc(request, *args, **kwargs)
 
-    wrap.__doc__ = viewfunc.__doc__
-    wrap.__name__ = viewfunc.__name__
     return wrap
 
 
@@ -28,13 +28,13 @@ def require_canvas_oauth_token(viewfunc):
     flow is handled by the canvas_oauth library.
     """
 
+    @wraps(viewfunc)
     def wrap(request, *args, **kwargs):
         get_oauth_token(request)  # calling this method for its side-effect
         return viewfunc(request, *args, **kwargs)
 
-    wrap.__doc__ = viewfunc.__doc__
-    wrap.__name__ = viewfunc.__name__
     return wrap
+
 
 def api_canvas_oauth_token_exception(viewfunc):
     """
@@ -42,6 +42,7 @@ def api_canvas_oauth_token_exception(viewfunc):
     the exception will be handled by the middleware and trigger the oauth flow.
     """
 
+    @wraps(viewfunc)
     def wrap(request, *args, **kwargs):
         try:
             return viewfunc(request, *args, **kwargs)
@@ -50,6 +51,4 @@ def api_canvas_oauth_token_exception(viewfunc):
         except CanvasOAuthError:
             return JsonResponse({"message": "Failed to obtain OAuth token"}, status=500)
 
-    wrap.__doc__ = viewfunc.__doc__
-    wrap.__name__ = viewfunc.__name__
     return wrap
