@@ -19,7 +19,6 @@ export const mountToDoc = async (reactElm) => {
   await act(async () => {
     container = mount(reactElm);
   });
-  container.setProps();
   wrapper.innerHTML = '';
   wrapper.appendChild(container.getDOMNode());
   return container;

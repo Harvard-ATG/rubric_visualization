@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -7,9 +7,14 @@ import { View } from '@instructure/ui-view/lib/View';
 import { Grid } from '@instructure/ui-grid/lib/Grid';
 import { Text } from '@instructure/ui-text/lib/Text';
 import { List } from '@instructure/ui-list/lib/List';
+import { drawHeatMap } from '../HeatMap/HeatMap.js';
 
 const AssignmentCard = (props) => {
-  const { assignmentName, dueDate, observations } = props;
+  const { assignmentName, dueDate, observations, dataPoints, assignmentId } = props;
+  
+  useEffect(() => {
+    drawHeatMap(`#heatMap-${assignmentId}`, dataPoints);
+  }, []);
 
   return (
     <div className="vis-card">
@@ -39,7 +44,7 @@ const AssignmentCard = (props) => {
         <Grid>
           <Grid.Row>
             <Grid.Col>
-              <p>This is where the vis goes</p>
+              <div id={`heatMap-${assignmentId}`}></div>
             </Grid.Col>
             <Grid.Col>
               <div className="contained-area">
@@ -66,7 +71,7 @@ const AssignmentCard = (props) => {
 
 AssignmentCard.propTypes = {
   assignmentName: PropTypes.string.isRequired,
-  dueDate: PropTypes.number.isRequired,
+  dueDate: PropTypes.number,
   observations: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 

@@ -1,46 +1,92 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Flex } from '@instructure/ui-flex/lib/Flex';
 
 import Selector from '../Selector/Selector';
 import AssignmentCard from '../VisCards/AssignmentCard';
 
-const CompareAssignmentsTab = () => (
-  <div>
-    <Flex justifyItems="space-between" margin="0 0 medium">
-      <Flex.Item>
-        <Selector options={['Rubic Name', 'that', 'the other']} labelText="Show Rubric:" />
-      </Flex.Item>
-      <Flex.Item>
-        <Selector options={['Due Date', 'another', 'and another']} labelText="Sort:" />
-      </Flex.Item>
-    </Flex>
-    <div className="filter-bar">
-      <Flex>
+import { AppContext } from '../App.js';
+import { pivotHeatMapData } from '../utils.js'
+
+const CompareAssignmentsTab = () => {
+  
+  const { state, dispatch } = useContext(AppContext);
+  const assignmentNames = state.compareAssignments.heatMapData.map((rubric) => rubric.name);
+  
+  if (state.loaded && state.compareAssignments.heatMapData.length === 0) {
+    dispatch({ type: 'setHeatMapData', value: pivotHeatMapData(state.payload) });
+    
+  }
+  
+  if (state.compareAssignments.heatMapData.length > 0 &&
+    state.compareAssignments.selectors.showingRubrics.values.length === 1 ) {
+    dispatch({
+      type: 'setAssignmentNames',
+      value: state.compareAssignments.heatMapData.map((rubric) => rubric.name) 
+    });
+  }
+  
+  const card = state.loaded && state.compareAssignments.heatMapData.length !== 0
+    ? (
+      state.compareAssignments.heatMapData.map((rubric) => (
+        <AssignmentCard
+          key={`assignmentCard-${rubric.assignmentId}`}
+          assignmentName={rubric.name}
+          dueDate={rubric.dueDate}
+          observations={['90% completion rate', '20% improvement in "Sources" over prior assignment', 'Section 4 respresents 80% of the "Does not meet" for "Mechanics"']}
+          dataPoints={rubric.dataPoints}
+          assignmentId={rubric.assignmentId}
+        />
+      ))
+    ) : <p>{state.placeholder}</p>;
+  
+  return (
+    <div>
+      <Flex justifyItems="space-between" margin="0 0 medium">
         <Flex.Item>
           <Selector
-            options={['All Sections', 'section1', 'the other']}
-            labelText="Sections:"
+            options={state.compareAssignments.selectors.showingRubrics.values}
+            selectorIdentifier="compareAssignments-showingRubrics"
+            labelText="Show Rubric:"
+            selectorValue={state.compareAssignments.selectors.showingRubrics.selected}
+            dispatch={dispatch}
           />
         </Flex.Item>
         <Flex.Item>
           <Selector
-            options={['All Instuctors', 'Bill', 'Joan']}
-            labelText="Instructors:"
+            selectorIdentifier="compareAssignments-sortBy"
+            options={state.compareAssignments.selectors.sortBy.values}
+            labelText="Sort:"
+            selectorValue={state.compareAssignments.selectors.sortBy.selected}
+            dispatch={dispatch}
           />
         </Flex.Item>
       </Flex>
+      <div className="filter-bar">
+        <Flex>
+          <Flex.Item>
+            <Selector
+              selectorIdentifier="compareAssignments-sections"
+              options={state.compareAssignments.selectors.sections.values}
+              labelText="Sections:"
+              selectorValue={state.compareAssignments.selectors.sections.selected}
+              dispatch={dispatch}
+            />
+          </Flex.Item>
+          <Flex.Item>
+            <Selector
+              selectorIdentifier="compareAssignments-instructors"
+              options={state.compareAssignments.selectors.instructors.values}
+              labelText="Instructors:"
+              selectorValue={state.compareAssignments.selectors.instructors.selected}
+              dispatch={dispatch}
+            />
+          </Flex.Item>
+        </Flex>
+      </div>
+      { card }
     </div>
-    <AssignmentCard
-      assignmentName="Roanoke Colony Writeup"
-      dueDate={2}
-      observations={['90% completion rate', '20% improvement in "Sources" over prior assignment', 'Section 4 respresents 80% of the "Does not meet" for "Mechanics"']}
-    />
-    <AssignmentCard
-      assignmentName="Hamilton Analysis"
-      dueDate={7}
-      observations={['88% completion rate', '20% improvement in "Sources" over prior assignment', 'Section 3 has significantly increased performance in "Mechanics" and "Thesis" since prior assignment']}
-    />
-  </div>
-);
+  );
+  
+};
 
 export default CompareAssignmentsTab;

@@ -14,23 +14,80 @@ def get_some_data(request):
         per_page=100
         )
         
-    course = 58055
+    course = 53582 # this is the id for Zach's test class
     
     students = get_students_list(request_context, course)
     assignments = get_assignments_list(request_context, course)
     assignment_ids = [assignment['id'] for assignment in assignments]
-    # submissions = get_submissions_with_rubric_assessments(
-    #     request_context,
-    #     course,
-    #     assignment_ids
-    #     )
-    data = {
+    submissions = get_submissions_with_rubric_assessments(
+        request_context,
+        course,
+        assignment_ids
+        )
+    payload = {
         'assignments': assignments,
-        'submissions': [],
+        'submissions': submissions,
         'students': students,
     }
+    denormalized_data = denormalize(payload)
+    payload['denormalized_data'] = denormalized_data
     
-    return JsonResponse(data)
+    return JsonResponse(payload)
+    
+    
+def denormalize(data):
+    
+    assignments_lookup = {}
+    criteria_lookup = {}
+    
+    for assignment in data['assignments']:
+        assignments_lookup[assignment['id']] = assignment
+        for criterion in assignment['rubric']:
+            if criterion['id'] not in criteria_lookup:
+                criteria_lookup[criterion['id']] = criterion
+                
+    students_lookup = {}
+    for student in data['students']:
+        students_lookup[student['id']] = student
+        
+    output = []
+
+    # iterate through assignments
+    for assignment in data['submissions']:
+        assignment_id = assignment['assignment_id']
+        assignment_name = assignments_lookup[assignment_id]['name']
+    
+        # iterate through submissions under assignments
+        for submission in assignment['submissions']:
+            if submission['workflow_state'] == 'graded':
+                submission_id = submission['id']
+                student_id = submission['user_id']
+                student_name = students_lookup[student_id]['sortable_name']
+
+                # iterate through criteria and ratings under submissions
+                for criterion_id, criterion_data in submission['rubric_assessment'].items():
+                    score = criterion_data['points']
+                    criterion_name = criteria_lookup[criterion_id]['description']
+                    row = {
+                        "student_id": student_id,
+                        "student_name": student_name,
+                        "assignment_id": assignment_id,
+                        "assignment_name": assignment_name,
+                        "criterion_id": criterion_id,
+                        "criterion_name": criterion_name,
+                        "score": score,
+                        "rating": get_rating(criterion_id, score, criteria_lookup)
+                    }
+                    output.append(row)
+    return output
+
+
+def get_rating(criterion_id, score, criteria_lookup):
+    criterion_info = criteria_lookup[criterion_id]
+    for rating in reversed(criterion_info['ratings']):
+        if score <= rating['points']:
+            return rating['description']
+    return None
 
 
 def get_students_list(request_context, course_id):
@@ -55,13 +112,16 @@ def get_assignments_list(request_context, course_id):
     Returns a list of assignments for the course.
     https://canvas.instructure.com/doc/api/assignments.html#method.assignments_api.index 
     '''
+    
+    keys = ('id', 'name', 'due_at', 'rubric', 'rubric_settings') # reduce the clutter
     results = get_all_list_data(
         request_context,
         assignments.list_assignments,
         course_id,
         ''
         )
-    return list(filter(lambda x: 'rubric' in x, results))
+    my_assignments = list(filter(lambda x: 'rubric' in x, results))
+    return [{k: assignment[k] for k in keys} for assignment in my_assignments]
     
 
 def get_submissions_with_rubric_assessments(request_context, course_id, assignment_ids):
