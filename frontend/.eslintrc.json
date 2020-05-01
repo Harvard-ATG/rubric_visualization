@@ -24,6 +24,7 @@
     ],
     "rules": {
         "react/jsx-filename-extension": [1, {"extensions": [".js", ".jsx"] }],
-        "import/no-extraneous-dependencies": [1, {"devDependencies": true}]
+        "import/no-extraneous-dependencies": [1, {"devDependencies": true}],
+        "no-param-reassign": [2, {"props": false}]
     }
 }

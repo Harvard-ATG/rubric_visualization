@@ -1,11 +1,13 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 import { SimpleSelect } from '@instructure/ui-simple-select/lib/SimpleSelect';
 
 const Selector = (props) => {
-  const { labelText, options, selectorIdentifier, selectorValue, dispatch } = props;
-  
+  const {
+    labelText, options, selectorIdentifier, selectorValue, dispatch,
+  } = props;
+
   return (
     <SimpleSelect
       renderLabel={labelText}

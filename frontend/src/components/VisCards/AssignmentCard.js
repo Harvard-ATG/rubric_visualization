@@ -7,11 +7,13 @@ import { View } from '@instructure/ui-view/lib/View';
 import { Grid } from '@instructure/ui-grid/lib/Grid';
 import { Text } from '@instructure/ui-text/lib/Text';
 import { List } from '@instructure/ui-list/lib/List';
-import { drawHeatMap } from '../HeatMap/HeatMap.js';
+import { drawHeatMap } from '../HeatMap/HeatMap';
 
 const AssignmentCard = (props) => {
-  const { assignmentName, dueDate, observations, dataPoints, assignmentId } = props;
-  
+  const {
+    assignmentName, dueDate, observations, dataPoints, assignmentId,
+  } = props;
+
   useEffect(() => {
     drawHeatMap(`#heatMap-${assignmentId}`, dataPoints);
   }, []);
@@ -44,7 +46,7 @@ const AssignmentCard = (props) => {
         <Grid>
           <Grid.Row>
             <Grid.Col>
-              <div id={`heatMap-${assignmentId}`}></div>
+              <div id={`heatMap-${assignmentId}`} />
             </Grid.Col>
             <Grid.Col>
               <div className="contained-area">
@@ -69,10 +71,16 @@ const AssignmentCard = (props) => {
   );
 };
 
+AssignmentCard.defaultProps = {
+  dueDate: null,
+};
+
 AssignmentCard.propTypes = {
   assignmentName: PropTypes.string.isRequired,
   dueDate: PropTypes.number,
   observations: PropTypes.arrayOf(PropTypes.string).isRequired,
+  dataPoints: PropTypes.arrayOf(PropTypes.object).isRequired,
+  assignmentId: PropTypes.string.isRequired,
 };
 
 export default AssignmentCard;

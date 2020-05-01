@@ -4,27 +4,27 @@ import { Flex } from '@instructure/ui-flex/lib/Flex';
 import Selector from '../Selector/Selector';
 import AssignmentCard from '../VisCards/AssignmentCard';
 
-import { AppContext } from '../App.js';
-import { pivotHeatMapData } from '../utils.js'
+import { AppContext } from '../AppState';
+import { pivotHeatMapData } from '../utils';
 
 const CompareAssignmentsTab = () => {
-  
   const { state, dispatch } = useContext(AppContext);
-  const assignmentNames = state.compareAssignments.heatMapData.map((rubric) => rubric.name);
-  
-  if (state.loaded && state.compareAssignments.heatMapData.length === 0) {
+
+  // TODO: these transformations and updates to state need to be re-evaluated
+  if (state.loaded
+    && state.compareAssignments.heatMapData.length === 0
+    && state.compareAssignments.pivoted === false) {
     dispatch({ type: 'setHeatMapData', value: pivotHeatMapData(state.payload) });
-    
   }
-  
-  if (state.compareAssignments.heatMapData.length > 0 &&
-    state.compareAssignments.selectors.showingRubrics.values.length === 1 ) {
+
+  if (state.compareAssignments.heatMapData.length > 0
+    && state.compareAssignments.selectors.showingRubrics.values.length === 1) {
     dispatch({
       type: 'setAssignmentNames',
-      value: state.compareAssignments.heatMapData.map((rubric) => rubric.name) 
+      value: state.compareAssignments.heatMapData.map((rubric) => rubric.name),
     });
   }
-  
+
   const card = state.loaded && state.compareAssignments.heatMapData.length !== 0
     ? (
       state.compareAssignments.heatMapData.map((rubric) => (
@@ -38,7 +38,7 @@ const CompareAssignmentsTab = () => {
         />
       ))
     ) : <p>{state.placeholder}</p>;
-  
+
   return (
     <div>
       <Flex justifyItems="space-between" margin="0 0 medium">
@@ -86,7 +86,6 @@ const CompareAssignmentsTab = () => {
       { card }
     </div>
   );
-  
 };
 
 export default CompareAssignmentsTab;

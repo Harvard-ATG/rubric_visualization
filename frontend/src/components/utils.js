@@ -1,7 +1,9 @@
+export const emptyUtil = () => {};
+
 export const pivotHeatMapData = (payload) => {
   // this transformation takes into account that not all criteria have the same rating set
-  let allRubircs = payload.assignments.map((assignment) => {
-    let rubric = {
+  const allRubircs = payload.assignments.map((assignment) => {
+    const rubric = {
       assignmentId: assignment.id,
       name: assignment.name,
       dueDate: assignment.due_at,
@@ -11,33 +13,29 @@ export const pivotHeatMapData = (payload) => {
         }
         return acc;
       }, 0),
-      dataPoints: assignment.rubric.map((criterion) => {
-        return criterion.ratings.map((rating) => {  
-          let dataPoint = {
-            criterionId: criterion.id,
-            criterion: criterion.description,
-            ratingDescription: rating.description,
-            maxPoints: rating.points,
-            count: payload.denormalized_data.reduce((acc, curr) => {
-              // return accumulator(int) + expression (true-false ...or... 1-0)
-              return (acc + (curr.criterion_id === criterion.id &&
-                curr.rating === rating.description &&
-                curr.assignment_id === assignment.id));
-            }, 0)
-          }    
-          return dataPoint;
-        });
-      })
-    }
-    
+      dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
+        const dataPoint = {
+          criterionId: criterion.id,
+          criterion: criterion.description,
+          ratingDescription: rating.description,
+          maxPoints: rating.points,
+          count: payload.denormalized_data.reduce((acc, curr) => (
+            acc + (curr.criterion_id === criterion.id
+              && curr.rating === rating.description
+              && curr.assignment_id === assignment.id)), 0),
+        };
+        return dataPoint;
+      })),
+    };
+
     rubric.dataPoints.forEach((criterion) => {
       criterion.forEach((rating) => {
-        rating['value'] = rubric.totalAssessments !== 0
-          ? (parseInt(((rating.count / rubric.totalAssessments) * 100).toFixed()))
+        rating.value = rubric.totalAssessments !== 0
+          ? (Number(((rating.count / rubric.totalAssessments) * 100).toFixed()))
           : undefined;
       });
     });
-    
+
     return rubric;
   });
   return allRubircs;

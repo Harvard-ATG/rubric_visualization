@@ -1,13 +1,13 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { shallow } from 'enzyme';
 import '../../test/setUpTests';
 
 import TopNav from './TopNav';
 import CompareAssignmentsTab from '../CompareAssignmentsTab/CompareAssignmentsTab';
 
 describe('<TopNav />', () => {
-  it('component mounts', async () => {
-    const component = await mount(<TopNav />);
+  it('<TopNav /> renders appropriate children', async () => {
+    const component = await shallow(<TopNav />);
     expect(component.find(CompareAssignmentsTab).length).toEqual(1);
   });
 });
