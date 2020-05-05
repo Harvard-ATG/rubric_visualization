@@ -10,9 +10,9 @@ export const drawFlatHeatMap = () => 0;
  * @returns {none} Produces side-effect which draws heat map.
  * data = [
  *   [
- *     {assignment: "Paper", outcome: "Outstanding", value: "10"},
- *     {assignment: "Paper", outcome: "Average", value: "20"},
- *     {assignment: "Paper", outcome: "Poor", value: "70"}
+ *     {criterion: "Bibliography", ratingDescription: "Outstanding", value: 10},
+ *     {criterion: "Bibliography", ratingDescription: "Average", value: 20},
+ *     {criterion: "Bibliography", ratingDescription: "Poor", value: 70}
  *   ],
  *   [
  *     {...},{...},{...}
