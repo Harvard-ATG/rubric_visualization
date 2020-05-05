@@ -2,6 +2,23 @@ import * as d3 from 'd3';
 
 export const drawFlatHeatMap = () => 0;
 
+
+/**
+ * Draw heat map visualization for rubric performance.
+ * @param {string} id ID of the div to target to draw the vis.
+ * @param {array} data The datapoints to iterate over for visualization.
+ * @returns {none} Produces side-effect which draws heat map.
+ * data = [
+ *   [
+ *     {assignment: "Paper", outcome: "Outstanding", value: "10"},
+ *     {assignment: "Paper", outcome: "Average", value: "20"},
+ *     {assignment: "Paper", outcome: "Poor", value: "70"}
+ *   ],
+ *   [
+ *     {...},{...},{...}
+ *   ]
+ * ]
+ */
 export const drawHeatMap = (id, data) => {
   const margin = {
     top: 100, right: 50, bottom: 100, left: 150,

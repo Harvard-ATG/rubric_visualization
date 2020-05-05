@@ -2,7 +2,7 @@ export const emptyUtil = () => {};
 
 export const pivotHeatMapData = (payload) => {
   // this transformation takes into account that not all criteria have the same rating set
-  const allRubircs = payload.assignments.map((assignment) => {
+  const allRubrics = payload.assignments.map((assignment) => {
     const rubric = {
       assignmentId: assignment.id,
       name: assignment.name,
@@ -20,7 +20,7 @@ export const pivotHeatMapData = (payload) => {
           ratingDescription: rating.description,
           maxPoints: rating.points,
           count: payload.denormalized_data.reduce((acc, curr) => (
-            acc + (curr.criterion_id === criterion.id
+            acc + Number(curr.criterion_id === criterion.id
               && curr.rating === rating.description
               && curr.assignment_id === assignment.id)), 0),
         };
@@ -38,5 +38,5 @@ export const pivotHeatMapData = (payload) => {
 
     return rubric;
   });
-  return allRubircs;
+  return allRubrics;
 };

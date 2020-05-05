@@ -46,17 +46,26 @@ def get_some_data(request):
     
     
 def denormalize(data):
-    
+    """Denormalize the data provided by get_students_list, get_assignments_list, 
+    and get_submissions_with_rubric_assessments, and return a list.
+
+    argument: data
+    data = {
+        'assignments':get_assignments_list(),
+        'submissions': get_submissions_with_rubric_assessments(),
+        'students': get_student_list()
+    } 
+    """    
     assignments_lookup = {}
     criteria_lookup = {}
-    
+    student_lookup = {}
+   
     for assignment in data['assignments']:
         assignments_lookup[assignment['id']] = assignment
         for criterion in assignment['rubric']:
             if criterion['id'] not in criteria_lookup:
                 criteria_lookup[criterion['id']] = criterion
-                
-    students_lookup = {}
+   
     for student in data['students']:
         students_lookup[student['id']] = student
         
@@ -94,7 +103,7 @@ def denormalize(data):
 
 def get_rating(criterion_id, score, criteria_lookup):
     criterion_info = criteria_lookup[criterion_id]
-    for rating in reversed(criterion_info['ratings']):
+    for rating in sort(criterion_info, key=lambda x: x['ratings'], reverse=True):
         if score <= rating['points']:
             return rating['description']
     return None
