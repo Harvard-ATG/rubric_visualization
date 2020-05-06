@@ -1,29 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import '@instructure/canvas-theme';
 import './App.css';
+import { initialState, reducer, AppContext } from './AppState';
 import TopNav from './TopNav/TopNav';
 
 const App = () => {
-  const [appState, setAppState] = useState({
-    data: { assignments: [], submissions: [], students: [] },
-    loaded: false,
-    placeholder: 'Loading',
-  });
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     fetch('data/some_data')
       .then((response) => {
         if (response.status > 400) {
-          return setAppState({ ...appState, placeholder: 'Something went wrong!' });
+          return dispatch({ type: 'receivePayloadError' });
         }
         return response.json();
       })
-      .then((data) => setAppState({ ...appState, data, loaded: true }));
+      .then((payload) => {
+        dispatch({ type: 'receivePayload', value: payload });
+      });
   }, []);
 
   return (
     <div>
-      <TopNav />
+      <AppContext.Provider value={{ state, dispatch }}>
+        <TopNav />
+      </AppContext.Provider>
     </div>
   );
 };
