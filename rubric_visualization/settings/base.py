@@ -15,6 +15,7 @@ import logging
 from .secure import SECURE_SETTINGS
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = SECURE_SETTINGS.get('django_secret_key', 'changeme')
@@ -116,7 +117,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'http_static'))
+STATIC_ROOT = os.path.normpath(os.path.join(PROJECT_ROOT, 'http_static'))
 
 # Sessions
 
@@ -195,6 +196,13 @@ CANVAS_DOMAIN = SECURE_SETTINGS.get('canvas_domain', 'https://canvas.localhost')
 CANVAS_OAUTH_CANVAS_DOMAIN = CANVAS_DOMAIN
 CANVAS_OAUTH_CLIENT_ID = SECURE_SETTINGS.get('canvas_oauth_client_id')
 CANVAS_OAUTH_CLIENT_SECRET = SECURE_SETTINGS.get('canvas_oauth_client_secret')
+CANVAS_OAUTH_SCOPES = [
+    'url:GET|/api/v1/courses/:course_id/assignments',
+    'url:GET|/api/v1/courses/:course_id/users',
+    'url:GET|/api/v1/courses/:course_id/assignments/:assignment_id/submissions',
+    'url:GET|/api/v1/courses/:course_id/rubrics',
+    'url:GET|/api/v1/courses/:course_id/rubrics/:id',
+]
 
 # Settings for the canvas_sdk (https://github.com/penzance/canvas_python_sdk)
 # These settings can be passed to the sdk method functions or when creating
