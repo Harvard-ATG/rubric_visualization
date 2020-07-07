@@ -4,4 +4,6 @@ SECURE_SETTINGS = {
     'canvas_oauth_client_id': '', # Canvas developer key
     'canvas_oauth_client_secret': '', # Canvas developer key
     'canvas_domain': '',
+    'consumer_key': 'some-key',
+    'lti_secret': 'some-secret'
 }
