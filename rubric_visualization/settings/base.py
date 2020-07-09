@@ -237,14 +237,7 @@ CANVAS_OAUTH_CLIENT_SECRET = SECURE_SETTINGS.get('canvas_oauth_client_secret')
 CANVAS_OAUTH_SCOPES = [
     'url:GET|/api/v1/courses/:course_id/assignments',
     'url:GET|/api/v1/courses/:course_id/users',
-    'url:GET|/api/v1/courses/:course_id/assignments/:assignment_id/submissions',
-    'url:GET|/api/v1/courses/:course_id/rubrics',
-    'url:GET|/api/v1/courses/:course_id/rubrics/:id',
-]
-
-CANVAS_OAUTH_SCOPES = [
-    'url:GET|/api/v1/courses/:course_id/assignments',
-    'url:GET|/api/v1/courses/:course_id/users',
+    'url:GET|/api/v1/courses/:course_id/students',
     'url:GET|/api/v1/courses/:course_id/assignments/:assignment_id/submissions',
     'url:GET|/api/v1/courses/:course_id/rubrics',
     'url:GET|/api/v1/courses/:course_id/rubrics/:id',

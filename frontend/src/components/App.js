@@ -8,7 +8,7 @@ const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    fetch('data/some_data')
+    fetch(`data/${window.django.course_id}`)
       .then((response) => {
         if (response.status > 400) {
           return dispatch({ type: 'receivePayloadError' });

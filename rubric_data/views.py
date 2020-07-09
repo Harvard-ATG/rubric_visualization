@@ -14,19 +14,20 @@ logger = logging.getLogger(__name__)
 
 @api_canvas_oauth_token_exception
 @api_login_required
-def get_some_data(request):
+def course_data(request, course_id):
     
     access_token = get_oauth_token(request)
     request_context = RequestContext(**settings.CANVAS_SDK_SETTINGS, auth_token=access_token)
-    course = 53582 # this is the id for Zach's test class
+    # course = 53582 # this is the id for Zach's test class
+    course = 68667 # tylor's test course
 
     try:
-        students = get_students_list(request_context, course)
-        assignments = get_assignments_list(request_context, course)
+        students = get_students_list(request_context, course_id)
+        assignments = get_assignments_list(request_context, course_id)
         assignment_ids = [assignment['id'] for assignment in assignments]
         submissions = get_submissions_with_rubric_assessments(
             request_context,
-            course,
+            course_id,
             assignment_ids
             )
     except CanvasAPIError as e:

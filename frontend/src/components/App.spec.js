@@ -10,6 +10,7 @@ describe('My Test Suite', () => {
   });
 
   it('Tests with axe-core', async (done) => {
+    global.django = {course_id: 12345};
     jest.setTimeout(10000);
     global.fetch = await mockFetchSuccess({
       assignments: [],
