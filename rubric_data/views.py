@@ -18,8 +18,6 @@ def course_data(request, course_id):
     
     access_token = get_oauth_token(request)
     request_context = RequestContext(**settings.CANVAS_SDK_SETTINGS, auth_token=access_token)
-    # course = 53582 # this is the id for Zach's test class
-    course = 68667 # tylor's test course
 
     try:
         students = get_students_list(request_context, course_id)
