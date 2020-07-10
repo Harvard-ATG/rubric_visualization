@@ -14,11 +14,12 @@ class IndexView(LTIAuthMixin, LoginRequiredMixin, TemplateView):
     template_name = 'frontend/index.html'
 
     def get_context_data(self, **kwargs):
-        # I'm getting the course ID by doing some hackery with a session attribute.
-        # There has to be a simpler way to get that value.
+        # If you want to get a specific LTI property ie 'custom_canvas_course_id'
+        # to be made available in self.request.session, you may need to add it
+        # to the list setting LTI_PROPERTY_LIST_EX
         # We will probably pass the role in the future as well. It may dictate 
         # what the user sees.
         return {
-            'course_id': self.request.session['launch_presentation_return_url'].split("/")[4],
+            'course_id': self.request.session['custom_canvas_course_id'],
             'is_student': self.lti.lis_result_sourcedid(self.request)
         }

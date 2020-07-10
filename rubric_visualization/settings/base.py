@@ -14,7 +14,6 @@ import os
 import logging
 from .secure import SECURE_SETTINGS
 
-# ALLOWED_HOSTS = ['.harvard.edu']
 CSRF_TRUSTED_ORIGINS = ['canvas.harvard.edu']
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -217,6 +216,9 @@ PYLTI_CONFIG = {
 }
 
 X_FRAME_OPTIONS = SECURE_SETTINGS.get('X_FRAME_OPTIONS', 'ALLOW-FROM https://canvas.harvard.edu')
+
+# This setting will add an LTI property to the session
+LTI_PROPERTY_LIST_EX = ['custom_canvas_course_id']
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
