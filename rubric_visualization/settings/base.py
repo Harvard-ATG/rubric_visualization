@@ -14,6 +14,8 @@ import os
 import logging
 from .secure import SECURE_SETTINGS
 
+CSRF_TRUSTED_ORIGINS = ['canvas.harvard.edu']
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
 
@@ -33,6 +35,7 @@ INSTALLED_APPS = [
     'canvas_oauth.apps.CanvasOAuthConfig',
     'frontend.apps.FrontendConfig',
     'rubric_data.apps.RubricDataConfig',
+    'lti_provider',
 ]
 
 MIDDLEWARE = [
@@ -188,6 +191,43 @@ LOGGING = {
     }
 }
 
+# LTI configuration
+
+LTI_TOOL_CONFIGURATION = {
+    'title': 'Rubric Visualization',
+    'description': 'An LTI-compliant tool that enables instructors and administrators to visualize rubric data.',
+    'launch_url': 'lti/',
+    'embed_url': '',
+    'embed_icon_url': '',
+    'embed_tool_id': '',
+    'landing_url': '/',
+    'navigation': True,
+    'new_tab': False,
+    'course_aware': False,
+}
+
+
+PYLTI_CONFIG = {
+    'consumers': {
+        SECURE_SETTINGS['consumer_key']: {
+            'secret': SECURE_SETTINGS['lti_secret']
+        }
+    }
+}
+
+X_FRAME_OPTIONS = SECURE_SETTINGS.get('X_FRAME_OPTIONS', 'ALLOW-FROM https://canvas.harvard.edu')
+
+# This setting will add an LTI property to the session
+LTI_PROPERTY_LIST_EX = ['custom_canvas_course_id']
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'lti_provider.auth.LTIBackend',
+]
+
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_COOKIE_SAMESITE = None
+
 # Canvas domain for authorizing and retrieving rubric data
 CANVAS_DOMAIN = SECURE_SETTINGS.get('canvas_domain', 'https://canvas.localhost')
 
@@ -199,6 +239,7 @@ CANVAS_OAUTH_CLIENT_SECRET = SECURE_SETTINGS.get('canvas_oauth_client_secret')
 CANVAS_OAUTH_SCOPES = [
     'url:GET|/api/v1/courses/:course_id/assignments',
     'url:GET|/api/v1/courses/:course_id/users',
+    'url:GET|/api/v1/courses/:course_id/students',
     'url:GET|/api/v1/courses/:course_id/assignments/:assignment_id/submissions',
     'url:GET|/api/v1/courses/:course_id/rubrics',
     'url:GET|/api/v1/courses/:course_id/rubrics/:id',
