@@ -7,7 +7,8 @@ import { View } from '@instructure/ui-view/lib/View';
 import { Grid } from '@instructure/ui-grid/lib/Grid';
 import { Text } from '@instructure/ui-text/lib/Text';
 import { List } from '@instructure/ui-list/lib/List';
-import { drawHeatMap } from '../HeatMap/HeatMap';
+import { drawHeatMap, drawFlatHeatMap } from '../HeatMap/HeatMap';
+import { flatData } from '../utils';
 
 const AssignmentCard = (props) => {
   const {
@@ -15,8 +16,12 @@ const AssignmentCard = (props) => {
   } = props;
 
   useEffect(() => {
-    drawHeatMap(`#heatMap-${assignmentId}`, dataPoints);
-  }, []);
+    if (flatData(dataPoints) === true) {
+      drawFlatHeatMap(`#heatMap-${assignmentId}`, dataPoints);
+    } else {
+      drawHeatMap(`#heatMap-${assignmentId}`, dataPoints);
+    }
+  }, [dataPoints]);
 
   return (
     <div className="vis-card">

@@ -1,4 +1,15 @@
-export const emptyUtil = () => {};
+// for eslint purposes, keep more than one function in this file
+// export const emptyUtil = () => {};
+
+/**
+ * Test if the datapoints to be charted can be flattened.
+ * @param {array} data The datapoints to iterate over for visualization.
+ * @returns {boolean} return if every array of rating descriptions is the same
+ */
+export const flatData = (data) => {
+  const ratingSets = data.map((crit) => [...new Set(crit.map((d) => d.ratingDescription))]);
+  return ratingSets.every((curr) => curr.toString() === ratingSets[0].toString());
+};
 
 export const pivotHeatMapData = (payload) => {
   // this transformation takes into account that not all criteria have the same rating set

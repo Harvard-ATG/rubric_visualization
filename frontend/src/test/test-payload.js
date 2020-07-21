@@ -140,7 +140,7 @@ export const testPayload = {
             {
               id: 'blank',
               points: 18,
-              description: 'Mastery',
+              description: 'Perfection',
               long_description: '',
             },
             {
@@ -179,7 +179,7 @@ export const testPayload = {
             {
               id: '_5260',
               points: 6,
-              description: 'Emerging',
+              description: 'Beginning',
               long_description: '',
             },
           ],
