@@ -1,9 +1,21 @@
+from django.conf import settings
 from django.test import TestCase
-from .views import function_for_test_example
+from .views import denormalize
+
+import json
 
 
-class ExampleTests(TestCase):
-    
-    def test_example_test(self):
-        self.assertEqual(function_for_test_example(), 2)
+class ViewTests(TestCase):
+        
+    def test_denormalize(self):
+        with open(settings.PROJECT_ROOT + '/rubric_data/test_data/data.json') as json_file:
+            data = json.loads(json_file.read())
+            denormalized_data = denormalize(data)
+            self.assertIs(type(denormalized_data), list)
+            self.assertEqual(len(denormalized_data), 120)
+            self.assertEqual(len(denormalized_data[0]), 8)
+            
+    def test_denormalize_none(self):
+        denormalized_data = denormalize(None)
+        self.assertEqual(denormalized_data, [])
         
