@@ -6,8 +6,8 @@ import * as d3 from 'd3';
  * @param {string} id ID of the div to target to draw the vis.
  * @param {array} data The datapoints to iterate over for visualization.
  * @returns {none} Produces side-effect which draws heat map.
- * It is the caller's responsibility to ensure that each criterion in the rubric 
- * contains the same set of rating descriptions. 
+ * It is the caller's responsibility to ensure that each criterion in the rubric
+ * contains the same set of rating descriptions.
  *
  * For example, this nested data:
  *
@@ -26,7 +26,7 @@ import * as d3 from 'd3';
  *    {...}, {...}, {...}
  *  ]
  * ]
- * 
+ *
  * Will be flattened to:
  *
  * [
