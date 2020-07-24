@@ -6,16 +6,41 @@ import * as d3 from 'd3';
  * @param {string} id ID of the div to target to draw the vis.
  * @param {array} data The datapoints to iterate over for visualization.
  * @returns {none} Produces side-effect which draws heat map.
+ * It is the caller's responsibility to ensure that each criterion in the rubric 
+ * contains the same set of rating descriptions. 
+ *
+ * For example, this nested data:
+ *
  * data = [
- *   [
- *     {criterion: "Bibliography", ratingDescription: "Outstanding", value: 10},
- *     {criterion: "Bibliography", ratingDescription: "Average", value: 20},
- *     {criterion: "Bibliography", ratingDescription: "Poor", value: 70}
- *   ],
- *   [
- *     {...},{...},{...}
- *   ]
+ *  [
+ *    {criterion: "Bibliography",ratingDescription: "Outstanding", value: 10},
+ *    {criterion: "Bibliography",ratingDescription: "Average", value: 20},
+ *    {criterion: "Bibliography",ratingDescription: "Poor", value: 70}
+ *  ],
+ *  [
+ *    {criterion: "Closing",ratingDescription: "Outstanding", value: 70},
+ *    {criterion: "Closing",ratingDescription: "Average", value: 20},
+ *    {criterion: "Closing",ratingDescription: "Poor", value: 70}
+ *  ],
+ *  [
+ *    {...}, {...}, {...}
+ *  ]
  * ]
+ * 
+ * Will be flattened to:
+ *
+ * [
+ *   {"criterion": "Bibliography", "ratingDescription": "Outstanding", "value": 10},
+ *   {"criterion": "Bibliography","ratingDescription": "Average", "value": 20},
+ *   {"criterion": "Bibliography", "ratingDescription": "Poor", "value": 70},
+ *   {"criterion": "Closing", "ratingDescription": "Outstanding", "value": 70},
+ *   {"criterion": "Closing", "ratingDescription": "Average", "value": 20},
+ *   {"criterion": "Closing", "ratingDescription": "Poor", "value": 70},
+ *   {...},
+ *   {...},
+ *   {...}
+ * ]
+ *
  */
 export const drawFlatHeatMap = (id, data) => {
   const flatData = data.flat();
