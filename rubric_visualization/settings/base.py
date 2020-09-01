@@ -190,7 +190,7 @@ LOGGING = {
         },
     }
 }
-
+SESSION_COOKIE_SECURE = True
 # LTI configuration
 
 LTI_TOOL_CONFIGURATION = {

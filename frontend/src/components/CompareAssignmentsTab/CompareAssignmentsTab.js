@@ -1,14 +1,16 @@
 import React, { useContext } from 'react';
 import { Flex } from '@instructure/ui-flex/lib/Flex';
 
-import Selector from '../Selector/Selector';
 import AssignmentCard from '../VisCards/AssignmentCard';
+import CsvDownloadLink from '../CsvDownload/CsvDownloadLink'
+import Selector from '../Selector/Selector';
+
 
 import { AppContext } from '../AppState';
 import { pivotHeatMapData } from '../utils';
 
 const CompareAssignmentsTab = () => {
-  const { state, dispatch } = useContext(AppContext);
+const { state, dispatch } = useContext(AppContext);
 
   // TODO: these transformations and updates to state need to be re-evaluated
   if (state.loaded
@@ -83,6 +85,7 @@ const CompareAssignmentsTab = () => {
           </Flex.Item>
         </Flex>
       </div>
+      <CsvDownloadLink data={state.payload.denormalized_data} text=".CSV Download" />
       { card }
     </div>
   );
