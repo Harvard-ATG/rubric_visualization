@@ -45,11 +45,7 @@ const CompareAssignmentsTab = () => {
 
   const csvLink = loading
     ? (
-      <Flex direction="row-reverse" margin="medium 0 medium">
-        <Flex.Item>
-          <CsvDownloadLink data={state.payload.denormalized_data} text=".CSV Download" />
-        </Flex.Item>
-      </Flex>
+      <CsvDownloadLink data={state.payload.denormalized_data} text=".CSV Download" />  
     ) : '';
 
   return (
@@ -96,7 +92,11 @@ const CompareAssignmentsTab = () => {
           </Flex.Item>
         </Flex>
       </div>
-      { csvLink }
+      <Flex direction="row-reverse" margin="medium 0 medium">
+        <Flex.Item>
+          { csvLink }
+        </Flex.Item>
+      </Flex>
       { card }
     </div>
   );
