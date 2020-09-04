@@ -45,7 +45,7 @@ const CompareAssignmentsTab = () => {
 
   const csvLink = loading
     ? (
-      <CsvDownloadLink data={state.payload.denormalized_data} text=".CSV Download" />  
+      <CsvDownloadLink data={state.payload.denormalized_data} text=".CSV Download" />
     ) : '';
 
   return (
