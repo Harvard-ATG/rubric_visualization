@@ -190,7 +190,7 @@ LOGGING = {
         },
     }
 }
-SESSION_COOKIE_SECURE = True
+
 # LTI configuration
 
 LTI_TOOL_CONFIGURATION = {
@@ -215,8 +215,6 @@ PYLTI_CONFIG = {
     }
 }
 
-X_FRAME_OPTIONS = SECURE_SETTINGS.get('X_FRAME_OPTIONS', 'ALLOW-FROM https://canvas.harvard.edu')
-
 # This setting will add an LTI property to the session
 LTI_PROPERTY_LIST_EX = ['custom_canvas_course_id']
 
@@ -226,7 +224,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-SESSION_COOKIE_SAMESITE = None
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
 
 # Canvas domain for authorizing and retrieving rubric data
 CANVAS_DOMAIN = SECURE_SETTINGS.get('canvas_domain', 'https://canvas.localhost')
