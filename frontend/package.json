@@ -17,6 +17,7 @@
     "@instructure/ui-buttons": "^6.24.0",
     "@instructure/ui-flex": "^6.24.0",
     "@instructure/ui-grid": "^6.24.0",
+    "@instructure/ui-link": "^7.1.3",
     "@instructure/ui-list": "^6.24.0",
     "@instructure/ui-navigation": "^6.24.0",
     "@instructure/ui-select": "^6.24.0",

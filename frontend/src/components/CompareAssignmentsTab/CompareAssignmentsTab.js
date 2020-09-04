@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Flex } from '@instructure/ui-flex/lib/Flex';
 
 import AssignmentCard from '../VisCards/AssignmentCard';
-import CsvDownloadLink from '../CsvDownload/CsvDownloadLink'
+import CsvDownloadLink from '../CsvDownload/CsvDownloadLink';
 import Selector from '../Selector/Selector';
 
 
@@ -10,7 +10,7 @@ import { AppContext } from '../AppState';
 import { pivotHeatMapData } from '../utils';
 
 const CompareAssignmentsTab = () => {
-const { state, dispatch } = useContext(AppContext);
+  const { state, dispatch } = useContext(AppContext);
 
   // TODO: these transformations and updates to state need to be re-evaluated
   if (state.loaded
@@ -27,7 +27,9 @@ const { state, dispatch } = useContext(AppContext);
     });
   }
 
-  const card = state.loaded && state.compareAssignments.heatMapData.length !== 0
+  const loading = state.loaded && state.compareAssignments.heatMapData.length !== 0;
+
+  const card = loading
     ? (
       state.compareAssignments.heatMapData.map((rubric) => (
         <AssignmentCard
@@ -40,6 +42,15 @@ const { state, dispatch } = useContext(AppContext);
         />
       ))
     ) : <p>{state.placeholder}</p>;
+
+  const csvLink = loading
+    ? (
+      <Flex direction="row-reverse" margin="medium 0 medium">
+        <Flex.Item>
+          <CsvDownloadLink data={state.payload.denormalized_data} text=".CSV Download" />
+        </Flex.Item>
+      </Flex>
+    ) : '';
 
   return (
     <div>
@@ -85,7 +96,7 @@ const { state, dispatch } = useContext(AppContext);
           </Flex.Item>
         </Flex>
       </div>
-      <CsvDownloadLink data={state.payload.denormalized_data} text=".CSV Download" />
+      { csvLink }
       { card }
     </div>
   );
