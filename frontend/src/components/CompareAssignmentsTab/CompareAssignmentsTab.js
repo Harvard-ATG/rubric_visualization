@@ -1,8 +1,10 @@
 import React, { useContext } from 'react';
 import { Flex } from '@instructure/ui-flex/lib/Flex';
 
-import Selector from '../Selector/Selector';
 import AssignmentCard from '../VisCards/AssignmentCard';
+import CsvDownloadLink from '../CsvDownload/CsvDownloadLink';
+import Selector from '../Selector/Selector';
+
 
 import { AppContext } from '../AppState';
 import { pivotHeatMapData } from '../utils';
@@ -25,7 +27,9 @@ const CompareAssignmentsTab = () => {
     });
   }
 
-  const card = state.loaded && state.compareAssignments.heatMapData.length !== 0
+  const loading = state.loaded && state.compareAssignments.heatMapData.length !== 0;
+
+  const card = loading
     ? (
       state.compareAssignments.heatMapData.map((rubric) => (
         <AssignmentCard
@@ -38,6 +42,11 @@ const CompareAssignmentsTab = () => {
         />
       ))
     ) : <p>{state.placeholder}</p>;
+
+  const csvLink = loading
+    ? (
+      <CsvDownloadLink data={state.payload.denormalized_data} text=".CSV Download" />
+    ) : '';
 
   return (
     <div>
@@ -83,6 +92,11 @@ const CompareAssignmentsTab = () => {
           </Flex.Item>
         </Flex>
       </div>
+      <Flex direction="row-reverse" margin="medium 0 medium">
+        <Flex.Item>
+          { csvLink }
+        </Flex.Item>
+      </Flex>
       { card }
     </div>
   );
