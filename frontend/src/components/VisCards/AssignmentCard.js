@@ -14,7 +14,6 @@ const AssignmentCard = (props) => {
   const {
     assignmentName, dueDate, observations, dataPoints, assignmentId,
   } = props;
-  console.log(typeof(dataPoints));
 
   useEffect(() => {
     if (flatData(dataPoints) === true) {
