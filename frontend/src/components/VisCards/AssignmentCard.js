@@ -14,6 +14,7 @@ const AssignmentCard = (props) => {
   const {
     assignmentName, dueDate, observations, dataPoints, assignmentId,
   } = props;
+  console.log(typeof(dataPoints));
 
   useEffect(() => {
     if (flatData(dataPoints) === true) {
@@ -84,8 +85,8 @@ AssignmentCard.propTypes = {
   assignmentName: PropTypes.string.isRequired,
   dueDate: PropTypes.number,
   observations: PropTypes.arrayOf(PropTypes.string).isRequired,
-  dataPoints: PropTypes.arrayOf(PropTypes.object).isRequired,
-  assignmentId: PropTypes.string.isRequired,
+  dataPoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  assignmentId: PropTypes.number.isRequired,
 };
 
 export default AssignmentCard;
