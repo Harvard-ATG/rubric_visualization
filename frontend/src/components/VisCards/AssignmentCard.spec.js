@@ -1,13 +1,13 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import '../../test/setUpTests';
-import { testPayload } from '../../test/test-payload';
+import { testBusinessData } from '../../test/test-payload';
 
 import AssignmentCard from './AssignmentCard';
 
 import { pivotHeatMapData } from '../utils';
 
-const heatMapData = pivotHeatMapData(testPayload);
+const heatMapData = pivotHeatMapData(testBusinessData);
 
 describe('<AssignmentCard />', () => {
   it('component mounts with options', async () => {

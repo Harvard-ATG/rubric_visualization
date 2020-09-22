@@ -1,8 +1,8 @@
 import { flatData, pivotHeatMapData } from './utils';
 
-import { testPayload } from '../test/test-payload';
+import { testBusinessData } from '../test/test-payload';
 
-const heatMapData = pivotHeatMapData(testPayload);
+const heatMapData = pivotHeatMapData(testBusinessData);
 
 describe('utility functions', () => {
   it('returns true when criterion can be flattened', () => {

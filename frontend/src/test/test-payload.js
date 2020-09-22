@@ -1,6 +1,6 @@
 export const emptyObject = {};
 
-export const testPayload = {
+export const testBusinessData = {
   assignments: [
     {
       id: 222064,
