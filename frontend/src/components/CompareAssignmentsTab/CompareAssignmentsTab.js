@@ -41,10 +41,10 @@ const CompareAssignmentsTab = () => {
   //   });
   // }
 
-  const loading = state.loaded && state.compareAssignments.heatMapData.length !== 0;
-  const loaded = !state.loading && state.visualizationData.heatMapData.length !== 0;
+  // const loading = state.loaded && state.compareAssignments.heatMapData.length !== 0;
+  const loaded = !state.processing.loading && state.visualizationData.heatMapData.length !== 0;
 
-  const card = loading
+  const card = loaded
     ? (
       state.visualizationData.heatMapData.map((rubric) => (
         <AssignmentCard
@@ -58,7 +58,7 @@ const CompareAssignmentsTab = () => {
       ))
     ) : <p>Replace me with a spinner component</p>;
 
-  const csvLink = loading
+  const csvLink = loaded
     ? (
       <CsvDownloadLink data={state.businessData.denormalized_data} text=".CSV Download" />
     ) : '';

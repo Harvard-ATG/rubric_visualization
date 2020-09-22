@@ -1,11 +1,11 @@
 import React, { useEffect, useReducer } from 'react';
 
 import './App.css';
-import { newState, newReducer, AppContext } from './AppState';
+import { initialState, reducer, AppContext } from './AppState';
 import TopNav from './TopNav/TopNav';
 
 const App = () => {
-  const [state, dispatch] = useReducer(newReducer, newState);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     fetch(`data/${window.django.course_id}`)
