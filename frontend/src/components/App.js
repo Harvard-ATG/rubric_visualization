@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
-import '@instructure/canvas-theme';
+
 import './App.css';
 import { initialState, reducer, AppContext } from './AppState';
 import TopNav from './TopNav/TopNav';

@@ -84,8 +84,8 @@ AssignmentCard.propTypes = {
   assignmentName: PropTypes.string.isRequired,
   dueDate: PropTypes.number,
   observations: PropTypes.arrayOf(PropTypes.string).isRequired,
-  dataPoints: PropTypes.arrayOf(PropTypes.object).isRequired,
-  assignmentId: PropTypes.string.isRequired,
+  dataPoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  assignmentId: PropTypes.number.isRequired,
 };
 
 export default AssignmentCard;
