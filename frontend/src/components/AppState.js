@@ -2,82 +2,6 @@ import React from 'react';
 
 export const AppContext = React.createContext(null);
 
-// export const initialState = {
-//   payload: {
-//     assignments: [], submissions: [], students: [], denormalized_data: [],
-//   },
-//   compareAssignments: {
-//     heatMapData: [],
-//     pivoted: false,
-//     error: false,
-//     message: '',
-//     selectors: {
-//       showingRubrics: { values: ['All assignments'], selected: 'All assignments' },
-//       sortBy: { values: ['Due Date'], selected: 'Due Date' },
-//       sections: { values: ['All Sections'], selected: 'All Sections' },
-//       instructors: { values: ['All Instructors'], selected: 'All Instructors' },
-//     },
-//   },
-//   loaded: false,
-//   placeholder: 'Loading',
-// };
-
-// export const reducer = (state, action) => {
-//   switch (action.type) {
-//     case 'receivePayload':
-//       return {
-//         ...state,
-//         loaded: true,
-//         payload: action.value,
-//       };
-//     case 'receivePayloadError':
-//       return {
-//         ...state,
-//         loaded: true,
-//         placeholder: 'Something went wrong!',
-//       };
-//     case 'setHeatMapData':
-//       return {
-//         ...state,
-//         compareAssignments: {
-//           ...state.compareAssignments,
-//           heatMapData: action.value,
-//           pivoted: true,
-//         },
-//       };
-//     case 'setAssignmentNames':
-//       return {
-//         ...state,
-//         compareAssignments: {
-//           ...state.compareAssignments,
-//           selectors: {
-//             ...state.compareAssignments.selectors,
-//             showingRubrics: {
-//               ...state.compareAssignments.selectors.showingRubrics,
-//               values: ['All Rubrics', ...action.value],
-//             },
-//           },
-//         },
-//       };
-//     case 'compareAssignments-showingRubrics-setValue':
-//       return {
-//         ...state,
-//         compareAssignments: {
-//           ...state.compareAssignments,
-//           selectors: {
-//             ...state.compareAssignments.selectors,
-//             showingRubrics: {
-//               ...state.compareAssignments.selectors.showingRubrics,
-//               selected: action.value,
-//             },
-//           },
-//         },
-//       };
-//     default:
-//       return state;
-//   }
-// };
-
 export const initialState = {
   businessData: {
     assignments: [], submissions: [], students: [], denormalized_data: [],
@@ -103,18 +27,6 @@ export const initialState = {
     activeTab: 'compareAssignments',
   },
 };
-
-const updateSelectorValues = (selectorName, value, state) => {
-  let returnState = { ...state };
-  returnState.controls.selectors[selectorName]['values'] = value;
-  return returnState;
-};
-
-const updateSelectorSelection = (selectorName, value, state) => {
-  let returnState = { ...state };
-  returnState.controls.selectors[selectorName]['selection'] = value;
-  return returnState;
-}
 
 export const reducer = (state, action) => {
   switch (action.type) {
@@ -142,7 +54,7 @@ export const reducer = (state, action) => {
           ...state.processing,
           loadingBusinessData: false,
           error: true,
-          errorMessage: action.value
+          errorMessage: action.value,
         },
       };
     case 'heatMapDataPivoting':
@@ -151,7 +63,7 @@ export const reducer = (state, action) => {
         processing: {
           ...state.processing,
           pivotingHeatMap: true,
-        }
+        },
       };
     case 'heatMapDataPivoted':
       return {
@@ -163,7 +75,7 @@ export const reducer = (state, action) => {
         processing: {
           ...state.processing,
           pivotingHeatMap: false,
-        }
+        },
       };
     case 'heatMapDataPivotErrored':
       return {
@@ -172,7 +84,7 @@ export const reducer = (state, action) => {
           ...state.processing,
           error: true,
           errorMessage: action.value,
-        }
+        },
       };
     case 'showingRubricsValuesUpdated':
       return updateSelectorValues('showingRubrics', action.value, state);
@@ -181,4 +93,19 @@ export const reducer = (state, action) => {
     default:
       return state;
   }
+};
+
+
+// Helper to refactor the process of updating a selector's set of choices
+const updateSelectorValues = (selectorName, value, state) => {
+  const returnState = { ...state };
+  returnState.controls.selectors[selectorName].values = value;
+  return returnState;
+};
+
+// Helper to refactor the process of updating a selector's selection
+const updateSelectorSelection = (selectorName, value, state) => {
+  const returnState = { ...state };
+  returnState.controls.selectors[selectorName].selected = value;
+  return returnState;
 };

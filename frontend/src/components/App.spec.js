@@ -23,7 +23,7 @@ describe('My Test Suite', () => {
     const appComponent = await mountToDoc(<App />);
     const appNode = appComponent.getDOMNode();
     const config = { rules: {} };
-  
+
     axe.run(appNode, config, (err, { violations }) => {
       expect(err).toBe(null);
       expect(violations).toHaveLength(1);

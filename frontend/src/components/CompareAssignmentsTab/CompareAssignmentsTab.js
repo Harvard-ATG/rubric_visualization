@@ -13,36 +13,24 @@ const CompareAssignmentsTab = () => {
   const { state, dispatch } = useContext(AppContext);
 
   // TODO: these transformations and updates to state need to be re-evaluated
-  // if (state.loaded
-  //   && state.compareAssignments.heatMapData.length === 0
-  //   && state.compareAssignments.pivoted === false) {
-  //   dispatch({ type: 'setHeatMapData', value: pivotHeatMapData(state.payload) });
-  // }
-  if (state.processing.loading === false 
+  if (state.processing.loadingBusinessData === false
     && state.visualizationData.heatMapData.length === 0) {
     // TODO : make this async
     dispatch({ type: 'heatMapDataPivoting' });
     const vizData = pivotHeatMapData(state.businessData);
-    dispatch({ type: 'heatMapDataPivoted', value: vizData })    
+    dispatch({ type: 'heatMapDataPivoted', value: vizData });
   }
 
   if (state.visualizationData.heatMapData.length > 0
     && state.controls.selectors.showingRubrics.values.length === 1) {
     dispatch({
       type: 'showingRubricsValuesUpdated',
-      value: ['All assignments', ...state.visualizationData.heatMapData.map((r) => r.name)]
-    });  
+      value: ['All assignments', ...state.visualizationData.heatMapData.map((r) => r.name)],
+    });
   }
-  // if (state.compareAssignments.heatMapData.length > 0
-  //   && state.compareAssignments.selectors.showingRubrics.values.length === 1) {
-  //   dispatch({
-  //     type: 'setAssignmentNames',
-  //     value: state.compareAssignments.heatMapData.map((rubric) => rubric.name),
-  //   });
-  // }
 
-  // const loading = state.loaded && state.compareAssignments.heatMapData.length !== 0;
-  const loaded = !state.processing.loading && state.visualizationData.heatMapData.length !== 0;
+  const loaded = (!state.processing.loadingBusinessData
+    && state.visualizationData.heatMapData.length !== 0);
 
   const card = loaded
     ? (

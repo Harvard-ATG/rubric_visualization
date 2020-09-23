@@ -30,7 +30,7 @@ describe('<CompareAssignmentsTab />', () => {
       visualizationData: {
         ...initialState.visualizationData,
         heatMapData: pivotHeatMapData(testBusinessData),
-      }
+      },
     };
 
     const component = await mount(
