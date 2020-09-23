@@ -14,7 +14,8 @@ const CompareAssignmentsTab = () => {
 
   // TODO: these transformations and updates to state need to be re-evaluated
   if (state.processing.loadingBusinessData === false
-    && state.visualizationData.heatMapData.length === 0) {
+    && state.processing.pivotedHeatMap === false
+    && state.processing.pivotingHeatMap === false) {
     // TODO : make this async
     dispatch({ type: 'heatMapDataPivoting' });
     const vizData = pivotHeatMapData(state.businessData);

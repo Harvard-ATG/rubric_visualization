@@ -12,6 +12,7 @@ export const initialState = {
   processing: {
     loadingBusinessData: true,
     pivotingHeatMap: false,
+    pivotedHeatMap: false,
     error: false,
     errorMessage: '',
   },
@@ -26,6 +27,20 @@ export const initialState = {
   navigation: {
     activeTab: 'compareAssignments',
   },
+};
+
+// Helper to refactor the process of updating a selector's set of choices
+const updateSelectorValues = (selectorName, value, state) => {
+  const returnState = { ...state };
+  returnState.controls.selectors[selectorName].values = value;
+  return returnState;
+};
+
+// Helper to refactor the process of updating a selector's selection
+const updateSelectorSelection = (selectorName, value, state) => {
+  const returnState = { ...state };
+  returnState.controls.selectors[selectorName].selected = value;
+  return returnState;
 };
 
 export const reducer = (state, action) => {
@@ -75,6 +90,7 @@ export const reducer = (state, action) => {
         processing: {
           ...state.processing,
           pivotingHeatMap: false,
+          pivotedHeatMap: true,
         },
       };
     case 'heatMapDataPivotErrored':
@@ -93,19 +109,4 @@ export const reducer = (state, action) => {
     default:
       return state;
   }
-};
-
-
-// Helper to refactor the process of updating a selector's set of choices
-const updateSelectorValues = (selectorName, value, state) => {
-  const returnState = { ...state };
-  returnState.controls.selectors[selectorName].values = value;
-  return returnState;
-};
-
-// Helper to refactor the process of updating a selector's selection
-const updateSelectorSelection = (selectorName, value, state) => {
-  const returnState = { ...state };
-  returnState.controls.selectors[selectorName].selected = value;
-  return returnState;
 };
