@@ -1,10 +1,10 @@
 import React from 'react';
 import { render } from 'react-dom';
 
-import App from './components/App';
+import MVP from './components/MVP';
 
 import { theme } from '@instructure/canvas-theme';
 theme.use();
 
 const container = document.getElementById('app');
-render(<App />, container);
+render(<MVP />, container);

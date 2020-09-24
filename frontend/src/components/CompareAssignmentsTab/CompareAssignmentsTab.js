@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { Flex } from '@instructure/ui-flex/lib/Flex';
+import { Spinner } from '@instructure/ui-spinner';
 
 import AssignmentCard from '../VisCards/AssignmentCard';
 import CsvDownloadLink from '../CsvDownload/CsvDownloadLink';
@@ -30,22 +31,28 @@ const CompareAssignmentsTab = () => {
     });
   }
 
+  const filterAssignment = state.controls.selectors.showingRubrics.selected;
+  const assignmentSet = state.controls.selectors.showingRubrics.selected === 'All assignments'
+    ? (
+      state.visualizationData.heatMapData
+    ) : (
+      state.visualizationData.heatMapData.filter((rubric) => rubric.name === filterAssignment)
+    );
+
   const loaded = (!state.processing.loadingBusinessData
     && state.visualizationData.heatMapData.length !== 0);
 
   const card = loaded
     ? (
-      state.visualizationData.heatMapData.map((rubric) => (
+      assignmentSet.map((rubric) => (
         <AssignmentCard
           key={`assignmentCard-${rubric.assignmentId}`}
           assignmentName={rubric.name}
-          dueDate={rubric.dueDate}
-          observations={['90% completion rate', '20% improvement in "Sources" over prior assignment', 'Section 4 respresents 80% of the "Does not meet" for "Mechanics"']}
           dataPoints={rubric.dataPoints}
           assignmentId={rubric.assignmentId}
         />
       ))
-    ) : <p>Replace me with a spinner component</p>;
+    ) : <Spinner renderTitle="Loading" size="medium" margin="0 0 0 medium" />;
 
   const csvLink = loaded
     ? (
@@ -54,7 +61,7 @@ const CompareAssignmentsTab = () => {
 
   return (
     <div>
-      <Flex justifyItems="space-between" margin="0 0 medium">
+      <Flex justifyItems="space-between" margin="medium 0 medium">
         <Flex.Item>
           <Selector
             options={state.controls.selectors.showingRubrics.values}
@@ -64,44 +71,17 @@ const CompareAssignmentsTab = () => {
             dispatch={dispatch}
           />
         </Flex.Item>
-        <Flex.Item>
-          <Selector
-            selectorKey="sortBy"
-            options={state.controls.selectors.sortBy.values}
-            labelText="Sort:"
-            selectorValue={state.controls.selectors.sortBy.selected}
-            dispatch={dispatch}
-          />
-        </Flex.Item>
       </Flex>
-      <div className="filter-bar">
-        <Flex>
-          <Flex.Item>
-            <Selector
-              selectorKey="sections"
-              options={state.controls.selectors.sections.values}
-              labelText="Sections:"
-              selectorValue={state.controls.selectors.sections.selected}
-              dispatch={dispatch}
-            />
-          </Flex.Item>
-          <Flex.Item>
-            <Selector
-              selectorKey="instructors"
-              options={state.controls.selectors.instructors.values}
-              labelText="Instructors:"
-              selectorValue={state.controls.selectors.instructors.selected}
-              dispatch={dispatch}
-            />
-          </Flex.Item>
-        </Flex>
-      </div>
       <Flex direction="row-reverse" margin="medium 0 medium">
         <Flex.Item>
           { csvLink }
         </Flex.Item>
       </Flex>
-      { card }
+      <Flex justifyItems="center">
+        <Flex.Item>
+          { card }
+        </Flex.Item>
+      </Flex>
     </div>
   );
 };

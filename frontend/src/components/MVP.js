@@ -2,9 +2,10 @@ import React, { useEffect, useReducer } from 'react';
 
 import './App.css';
 import { initialState, reducer, AppContext } from './AppState';
-import TopNav from './TopNav/TopNav';
 
-const App = () => {
+import CompareAssignmentsTab from './CompareAssignmentsTab/CompareAssignmentsTab';
+
+const MVP = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -23,10 +24,10 @@ const App = () => {
   return (
     <div>
       <AppContext.Provider value={{ state, dispatch }}>
-        <TopNav />
+        <CompareAssignmentsTab />
       </AppContext.Provider>
     </div>
   );
 };
 
-export default App;
+export default MVP;

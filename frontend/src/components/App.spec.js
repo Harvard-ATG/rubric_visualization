@@ -2,7 +2,7 @@ import React from 'react';
 import axe from 'axe-core';
 import { mockFetchSuccess, mountToDoc } from '../test/test-helpers';
 
-import App from './App';
+import MVP from './MVP';
 
 describe('My Test Suite', () => {
   it('Just passes', () => {
@@ -20,7 +20,7 @@ describe('My Test Suite', () => {
         { id: 2, sortable_name: 'sue' },
       ],
     });
-    const appComponent = await mountToDoc(<App />);
+    const appComponent = await mountToDoc(<MVP />);
     const appNode = appComponent.getDOMNode();
     const config = { rules: {} };
 
