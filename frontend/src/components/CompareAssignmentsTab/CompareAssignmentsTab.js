@@ -8,6 +8,7 @@ import Selector from '../Selector/Selector';
 
 import { AppContext } from '../AppState';
 import { pivotHeatMapData } from '../utils';
+import { selectorValuesUpdated } from '../eventTypes';
 
 const CompareAssignmentsTab = () => {
   const { state, dispatch } = useContext(AppContext);
@@ -25,7 +26,8 @@ const CompareAssignmentsTab = () => {
   if (state.visualizationData.heatMapData.length > 0
     && state.controls.selectors.showingRubrics.values.length === 1) {
     dispatch({
-      type: 'showingRubricsValuesUpdated',
+      type: selectorValuesUpdated,
+      selectorKey: 'showingRubrics',
       value: ['All assignments', ...state.visualizationData.heatMapData.map((r) => r.name)],
     });
   }
