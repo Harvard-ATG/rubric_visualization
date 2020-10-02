@@ -1,16 +1,24 @@
 import React from 'react';
 
+import * as eventTypes from './eventTypes';
+
 export const AppContext = React.createContext(null);
 
 export const initialState = {
-  payload: {
+  businessData: {
     assignments: [], submissions: [], students: [], denormalized_data: [],
   },
-  compareAssignments: {
+  visualizationData: {
     heatMapData: [],
-    pivoted: false,
+  },
+  processing: {
+    loadingBusinessData: true,
+    pivotingHeatMap: false,
+    pivotedHeatMap: false,
     error: false,
-    message: '',
+    errorMessage: '',
+  },
+  controls: {
     selectors: {
       showingRubrics: { values: ['All assignments'], selected: 'All assignments' },
       sortBy: { values: ['Due Date'], selected: 'Due Date' },
@@ -18,61 +26,88 @@ export const initialState = {
       instructors: { values: ['All Instructors'], selected: 'All Instructors' },
     },
   },
-  loaded: false,
-  placeholder: 'Loading',
+  navigation: {
+    activeTab: 'compareAssignments',
+  },
+};
+
+// Helper to refactor the process of updating a selector's set of choices
+const updateSelectorValues = (key, value, state) => {
+  const returnState = { ...state };
+  returnState.controls.selectors[key].values = value;
+  return returnState;
+};
+
+// Helper to refactor the process of updating a selector's selection
+const updateSelectorSelection = (key, value, state) => {
+  const returnState = { ...state };
+  returnState.controls.selectors[key].selected = value;
+  return returnState;
 };
 
 export const reducer = (state, action) => {
   switch (action.type) {
-    case 'receivePayload':
+    case eventTypes.businessDataFetching:
       return {
         ...state,
-        loaded: true,
-        payload: action.value,
+        processing: {
+          ...state.processing,
+          loadingBusinessData: true,
+        },
       };
-    case 'receivePayloadError':
+    case eventTypes.businessDataFetched:
       return {
         ...state,
-        loaded: true,
-        placeholder: 'Something went wrong!',
+        businessData: action.value,
+        processing: {
+          ...state.processing,
+          loadingBusinessData: false,
+        },
       };
-    case 'setHeatMapData':
+    case eventTypes.businessDataFetchErrored:
       return {
         ...state,
-        compareAssignments: {
-          ...state.compareAssignments,
+        processing: {
+          ...state.processing,
+          loadingBusinessData: false,
+          error: true,
+          errorMessage: action.value,
+        },
+      };
+    case eventTypes.heatMapDataPivoting:
+      return {
+        ...state,
+        processing: {
+          ...state.processing,
+          pivotingHeatMap: true,
+        },
+      };
+    case eventTypes.heatMapDataPivoted:
+      return {
+        ...state,
+        visualizationData: {
+          ...state.visualizationData,
           heatMapData: action.value,
-          pivoted: true,
+        },
+        processing: {
+          ...state.processing,
+          pivotingHeatMap: false,
+          pivotedHeatMap: true,
         },
       };
-    case 'setAssignmentNames':
+    case eventTypes.heatMapDataPivotErrored:
       return {
         ...state,
-        compareAssignments: {
-          ...state.compareAssignments,
-          selectors: {
-            ...state.compareAssignments.selectors,
-            showingRubrics: {
-              ...state.compareAssignments.selectors.showingRubrics,
-              values: ['All Rubrics', ...action.value],
-            },
-          },
+        processing: {
+          ...state.processing,
+          error: true,
+          errorMessage: action.value,
         },
       };
-    case 'compareAssignments-showingRubrics-setValue':
-      return {
-        ...state,
-        compareAssignments: {
-          ...state.compareAssignments,
-          selectors: {
-            ...state.compareAssignments.selectors,
-            showingRubrics: {
-              ...state.compareAssignments.selectors.showingRubrics,
-              selected: action.value,
-            },
-          },
-        },
-      };
+    case eventTypes.selectorValuesUpdated:
+      return updateSelectorValues(action.selectorKey, action.value, state);
+    case eventTypes.selectorSelected:
+      return updateSelectorSelection(action.selectorKey, action.value, state);
     default:
       return state;
   }

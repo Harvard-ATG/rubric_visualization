@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import '../../test/setUpTests';
-import { testPayload } from '../../test/test-payload';
+import { testBusinessData } from '../../test/test-payload';
 
 import CompareAssignmentsTab from './CompareAssignmentsTab';
 import AssignmentCard from '../VisCards/AssignmentCard';
@@ -22,11 +22,14 @@ describe('<CompareAssignmentsTab />', () => {
   it('component mounts with three vis cards', async () => {
     const newState = {
       ...initialState,
-      payload: testPayload,
-      loaded: true,
-      compareAssignments: {
-        ...initialState.compareAssignments,
-        heatMapData: pivotHeatMapData(testPayload),
+      businessData: testBusinessData,
+      processing: {
+        ...initialState.processing,
+        loadingBusinessData: false,
+      },
+      visualizationData: {
+        ...initialState.visualizationData,
+        heatMapData: pivotHeatMapData(testBusinessData),
       },
     };
 

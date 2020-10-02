@@ -12,7 +12,7 @@ describe('<Selector />', () => {
         options={myOptions}
         labelText="Instructors:"
         selectorValue="All Instructors"
-        selectorIdentifier="compareAssignments-sections"
+        selectorKey="sections"
         dispatch={jest.fn()}
       />,
     );

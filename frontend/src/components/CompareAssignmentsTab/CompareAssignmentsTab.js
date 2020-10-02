@@ -8,30 +8,36 @@ import Selector from '../Selector/Selector';
 
 import { AppContext } from '../AppState';
 import { pivotHeatMapData } from '../utils';
+import { selectorValuesUpdated } from '../eventTypes';
 
 const CompareAssignmentsTab = () => {
   const { state, dispatch } = useContext(AppContext);
 
   // TODO: these transformations and updates to state need to be re-evaluated
-  if (state.loaded
-    && state.compareAssignments.heatMapData.length === 0
-    && state.compareAssignments.pivoted === false) {
-    dispatch({ type: 'setHeatMapData', value: pivotHeatMapData(state.payload) });
+  if (state.processing.loadingBusinessData === false
+    && state.processing.pivotedHeatMap === false
+    && state.processing.pivotingHeatMap === false) {
+    // TODO : make this async
+    dispatch({ type: 'heatMapDataPivoting' });
+    const vizData = pivotHeatMapData(state.businessData);
+    dispatch({ type: 'heatMapDataPivoted', value: vizData });
   }
 
-  if (state.compareAssignments.heatMapData.length > 0
-    && state.compareAssignments.selectors.showingRubrics.values.length === 1) {
+  if (state.visualizationData.heatMapData.length > 0
+    && state.controls.selectors.showingRubrics.values.length === 1) {
     dispatch({
-      type: 'setAssignmentNames',
-      value: state.compareAssignments.heatMapData.map((rubric) => rubric.name),
+      type: selectorValuesUpdated,
+      selectorKey: 'showingRubrics',
+      value: ['All assignments', ...state.visualizationData.heatMapData.map((r) => r.name)],
     });
   }
 
-  const loading = state.loaded && state.compareAssignments.heatMapData.length !== 0;
+  const loaded = (!state.processing.loadingBusinessData
+    && state.visualizationData.heatMapData.length !== 0);
 
-  const card = loading
+  const card = loaded
     ? (
-      state.compareAssignments.heatMapData.map((rubric) => (
+      state.visualizationData.heatMapData.map((rubric) => (
         <AssignmentCard
           key={`assignmentCard-${rubric.assignmentId}`}
           assignmentName={rubric.name}
@@ -41,11 +47,11 @@ const CompareAssignmentsTab = () => {
           assignmentId={rubric.assignmentId}
         />
       ))
-    ) : <p>{state.placeholder}</p>;
+    ) : <p>Replace me with a spinner component</p>;
 
-  const csvLink = loading
+  const csvLink = loaded
     ? (
-      <CsvDownloadLink data={state.payload.denormalized_data} text=".CSV Download" />
+      <CsvDownloadLink data={state.businessData.denormalized_data} text=".CSV Download" />
     ) : '';
 
   return (
@@ -53,19 +59,19 @@ const CompareAssignmentsTab = () => {
       <Flex justifyItems="space-between" margin="0 0 medium">
         <Flex.Item>
           <Selector
-            options={state.compareAssignments.selectors.showingRubrics.values}
-            selectorIdentifier="compareAssignments-showingRubrics"
+            options={state.controls.selectors.showingRubrics.values}
+            selectorKey="showingRubrics"
             labelText="Show Rubric:"
-            selectorValue={state.compareAssignments.selectors.showingRubrics.selected}
+            selectorValue={state.controls.selectors.showingRubrics.selected}
             dispatch={dispatch}
           />
         </Flex.Item>
         <Flex.Item>
           <Selector
-            selectorIdentifier="compareAssignments-sortBy"
-            options={state.compareAssignments.selectors.sortBy.values}
+            selectorKey="sortBy"
+            options={state.controls.selectors.sortBy.values}
             labelText="Sort:"
-            selectorValue={state.compareAssignments.selectors.sortBy.selected}
+            selectorValue={state.controls.selectors.sortBy.selected}
             dispatch={dispatch}
           />
         </Flex.Item>
@@ -74,19 +80,19 @@ const CompareAssignmentsTab = () => {
         <Flex>
           <Flex.Item>
             <Selector
-              selectorIdentifier="compareAssignments-sections"
-              options={state.compareAssignments.selectors.sections.values}
+              selectorKey="sections"
+              options={state.controls.selectors.sections.values}
               labelText="Sections:"
-              selectorValue={state.compareAssignments.selectors.sections.selected}
+              selectorValue={state.controls.selectors.sections.selected}
               dispatch={dispatch}
             />
           </Flex.Item>
           <Flex.Item>
             <Selector
-              selectorIdentifier="compareAssignments-instructors"
-              options={state.compareAssignments.selectors.instructors.values}
+              selectorKey="instructors"
+              options={state.controls.selectors.instructors.values}
               labelText="Instructors:"
-              selectorValue={state.compareAssignments.selectors.instructors.selected}
+              selectorValue={state.controls.selectors.instructors.selected}
               dispatch={dispatch}
             />
           </Flex.Item>
