@@ -201,7 +201,11 @@ LTI_TOOL_CONFIGURATION = {
     'embed_icon_url': '',
     'embed_tool_id': '',
     'landing_url': '/',
-    'navigation': True,
+    'course_navigation': {
+        "default": "disabled",
+        "enabled": "true",
+        "visibility": "admins",
+    },
     'new_tab': False,
     'course_aware': False,
 }
