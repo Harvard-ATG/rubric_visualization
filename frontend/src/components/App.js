@@ -7,7 +7,7 @@ import { initialState, reducer, AppContext } from './AppState';
 
 import CompareAssignmentsTab from './CompareAssignmentsTab/CompareAssignmentsTab';
 
-const MVP = () => {
+const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
@@ -32,4 +32,4 @@ const MVP = () => {
   );
 };
 
-export default MVP;
+export default App;
