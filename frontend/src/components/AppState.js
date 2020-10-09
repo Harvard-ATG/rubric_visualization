@@ -1,5 +1,7 @@
 import React from 'react';
 
+import * as eventTypes from './eventTypes';
+
 export const AppContext = React.createContext(null);
 
 export const initialState = {
@@ -30,22 +32,22 @@ export const initialState = {
 };
 
 // Helper to refactor the process of updating a selector's set of choices
-const updateSelectorValues = (selectorName, value, state) => {
+const updateSelectorValues = (key, value, state) => {
   const returnState = { ...state };
-  returnState.controls.selectors[selectorName].values = value;
+  returnState.controls.selectors[key].values = value;
   return returnState;
 };
 
 // Helper to refactor the process of updating a selector's selection
-const updateSelectorSelection = (selectorName, value, state) => {
+const updateSelectorSelection = (key, value, state) => {
   const returnState = { ...state };
-  returnState.controls.selectors[selectorName].selected = value;
+  returnState.controls.selectors[key].selected = value;
   return returnState;
 };
 
 export const reducer = (state, action) => {
   switch (action.type) {
-    case 'businessDataFetching':
+    case eventTypes.businessDataFetching:
       return {
         ...state,
         processing: {
@@ -53,7 +55,7 @@ export const reducer = (state, action) => {
           loadingBusinessData: true,
         },
       };
-    case 'businessDataFetched':
+    case eventTypes.businessDataFetched:
       return {
         ...state,
         businessData: action.value,
@@ -62,7 +64,7 @@ export const reducer = (state, action) => {
           loadingBusinessData: false,
         },
       };
-    case 'businessDataFetchErrored':
+    case eventTypes.businessDataFetchErrored:
       return {
         ...state,
         processing: {
@@ -72,7 +74,7 @@ export const reducer = (state, action) => {
           errorMessage: action.value,
         },
       };
-    case 'heatMapDataPivoting':
+    case eventTypes.heatMapDataPivoting:
       return {
         ...state,
         processing: {
@@ -80,7 +82,7 @@ export const reducer = (state, action) => {
           pivotingHeatMap: true,
         },
       };
-    case 'heatMapDataPivoted':
+    case eventTypes.heatMapDataPivoted:
       return {
         ...state,
         visualizationData: {
@@ -93,7 +95,7 @@ export const reducer = (state, action) => {
           pivotedHeatMap: true,
         },
       };
-    case 'heatMapDataPivotErrored':
+    case eventTypes.heatMapDataPivotErrored:
       return {
         ...state,
         processing: {
@@ -102,10 +104,10 @@ export const reducer = (state, action) => {
           errorMessage: action.value,
         },
       };
-    case 'showingRubricsValuesUpdated':
-      return updateSelectorValues('showingRubrics', action.value, state);
-    case 'showingRubricsSelected':
-      return updateSelectorSelection('showingRubrics', action.value, state);
+    case eventTypes.selectorValuesUpdated:
+      return updateSelectorValues(action.selectorKey, action.value, state);
+    case eventTypes.selectorSelected:
+      return updateSelectorSelection(action.selectorKey, action.value, state);
     default:
       return state;
   }
