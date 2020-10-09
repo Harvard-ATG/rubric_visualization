@@ -14,8 +14,15 @@
 
 .vis-card {
     margin-top: 1.65rem;
+    max-width: 600px;
+    min-width: 500px;
 }
 
 a {
     color: #0C93E3;
+}
+
+svg {
+    height: 450px;
+    width: 450px;
 }

@@ -80,7 +80,7 @@ def denormalize(data):
     
         # iterate through submissions under assignments
         for submission in assignment['submissions']:
-            if submission['workflow_state'] == 'graded':
+            if 'rubric_assessment' in submission.keys() and submission['workflow_state'] == 'graded':
                 submission_id = submission['id']
                 student_id = submission['user_id']
                 student_name = students_lookup[student_id]['sortable_name']

@@ -16,13 +16,12 @@ describe('<AssignmentCard />', () => {
       <AssignmentCard
         key={`assignmentCard-${rubric.assignmentId}`}
         assignmentName={rubric.name}
-        dueDate={rubric.dueDate}
-        observations={['90% completion rate', '20% improvement in "Sources" over prior assignment']}
         dataPoints={rubric.dataPoints}
         assignmentId={rubric.assignmentId}
       />
     );
     const component = await mount(card);
-    expect(component.find('li').length).toEqual(2);
+
+    expect(component.find('.section-title').length).toEqual(1);
   });
 });

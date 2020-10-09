@@ -4,7 +4,8 @@ import { businessDataFetched, businessDataFetchErrored } from './eventTypes';
 
 import './App.css';
 import { initialState, reducer, AppContext } from './AppState';
-import TopNav from './TopNav/TopNav';
+
+import CompareAssignmentsTab from './CompareAssignmentsTab/CompareAssignmentsTab';
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -25,7 +26,7 @@ const App = () => {
   return (
     <div>
       <AppContext.Provider value={{ state, dispatch }}>
-        <TopNav />
+        <CompareAssignmentsTab />
       </AppContext.Provider>
     </div>
   );

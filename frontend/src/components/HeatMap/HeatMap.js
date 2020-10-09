@@ -45,13 +45,13 @@ import * as d3 from 'd3';
 export const drawFlatHeatMap = (id, data) => {
   const flatData = data.flat();
   const margin = {
-    top: 100, right: 50, bottom: 100, left: 150,
+    top: 35, right: 50, bottom: 75, left: 90,
   };
-  const width = 750 - margin.left - margin.right;
-  const height = 750 - margin.top - margin.bottom;
+  const width = 500 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
 
-  const widthValue = 800;
-  const heightValue = 800;
+  const widthValue = 450;
+  const heightValue = 450;
   const svg = d3.select(`${id}`)
     .append('svg')
     .attr('viewBox', `0 0 ${widthValue} ${heightValue}`)
@@ -113,13 +113,13 @@ export const drawFlatHeatMap = (id, data) => {
  */
 export const drawHeatMap = (id, data) => {
   const margin = {
-    top: 100, right: 50, bottom: 100, left: 150,
+    top: 35, right: 50, bottom: 75, left: 90,
   };
-  const width = 750 - margin.left - margin.right;
-  const height = 750 - margin.top - margin.bottom;
+  const width = 500 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
 
-  const widthValue = 800;
-  const heightValue = 800;
+  const widthValue = 450;
+  const heightValue = 450;
   const svg = d3.select(`${id}`)
     .append('svg')
     .attr('viewBox', `0 0 ${widthValue} ${heightValue}`)
