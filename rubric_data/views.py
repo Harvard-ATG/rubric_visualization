@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from canvas_oauth.oauth import get_oauth_token
 from canvas_sdk.exceptions import CanvasAPIError
-from canvas_sdk.methods import submissions, assignments, courses
+from canvas_sdk.methods import submissions, assignments, courses, sections
 from canvas_sdk.utils import get_all_list_data
 from canvas_sdk import RequestContext
 from rubric_visualization.decorators import api_login_required, api_canvas_oauth_token_exception
@@ -28,15 +28,18 @@ def course_data(request, course_id):
             course_id,
             assignment_ids
             )
+        sections_list = get_sections_list(request_context, course_id)
+        
     except CanvasAPIError as e:
-        logger.exception("Canvas API error")
-        msg = "Canvas API error {status_code}".format(status_code=e.status_code)
+        msg = f"Canvas API error {e.status_code}"
+        logger.exception(msg)
         return JsonResponse({"message": msg}, status=500)
 
     payload = {
         'assignments': assignments,
         'submissions': submissions,
         'students': students,
+        'sections': sections_list
     }
     denormalized_data = denormalize(payload)
     payload['denormalized_data'] = denormalized_data
@@ -52,24 +55,23 @@ def denormalize(data):
     data = {
         'assignments':get_assignments_list(),
         'submissions': get_submissions_with_rubric_assessments(),
-        'students': get_student_list()
+        'students': get_student_list(),
+        'sections': get_sections_list()
     } 
     """   
     if not data:
         return []
     
-    assignments_lookup = {}
-    criteria_lookup = {}
-    students_lookup = {}
-   
-    for assignment in data['assignments']:
-        assignments_lookup[assignment['id']] = assignment
-        for criterion in assignment['rubric']:
-            if criterion['id'] not in criteria_lookup:
-                criteria_lookup[criterion['id']] = criterion
-
-    for student in data['students']:
-        students_lookup[student['id']] = student
+    assignments_lookup = { assignment['id'] : assignment for assignment in data['assignments']}
+    criteria_lookup = { criterion['id'] : criterion 
+        for assignment in data['assignments'] 
+        for criterion in assignment['rubric'] 
+    }
+    students_lookup = { student['id'] : student for student in data['students']}
+    sections_lookup = { student['id']: section['sis_section_id'] 
+        for section in data['sections']
+        for student in section['students']
+    }
         
     output = []
 
@@ -84,6 +86,7 @@ def denormalize(data):
                 submission_id = submission['id']
                 student_id = submission['user_id']
                 student_name = students_lookup[student_id]['sortable_name']
+                section_id = sections_lookup[student_id]
 
                 # iterate through criteria and ratings under submissions
                 for criterion_id, criterion_data in submission['rubric_assessment'].items():
@@ -96,6 +99,7 @@ def denormalize(data):
                         "assignment_name": assignment_name,
                         "criterion_id": criterion_id,
                         "criterion_name": criterion_name,
+                        "section_id": section_id,
                         "score": score,
                         "rating": get_rating(criterion_id, score, criteria_lookup)
                     }
@@ -111,6 +115,14 @@ def get_rating(criterion_id, score, criteria_lookup):
             return rating['description']
     return None
 
+def get_sections_list(request_context, course_id):
+    results = get_all_list_data(
+        request_context,
+        sections.list_course_sections,
+        course_id,
+        'students'
+    )
+    return results
 
 def get_students_list(request_context, course_id):
     '''
