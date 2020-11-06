@@ -8,8 +8,8 @@ import Selector from '../Selector/Selector';
 
 
 import { AppContext } from '../AppState';
-import { pivotHeatMapData } from '../utils';
-import { heatMapDataPivoting, heatMapDataPivoted, selectorValuesUpdated } from '../eventTypes';
+import { pivotHeatMapData, pivotHeatMapDataWithSections } from '../utils';
+import { heatMapDataPivoting, heatMapDataPivoted, heatMapDataWithSectionsPivoted, selectorValuesUpdated } from '../eventTypes';
 
 const CompareAssignmentsTab = () => {
   const { state, dispatch } = useContext(AppContext);
@@ -18,12 +18,15 @@ const CompareAssignmentsTab = () => {
   if (state.processing.loadingBusinessData === false
     && state.processing.pivotedHeatMap === false
     && state.processing.pivotingHeatMap === false) {
-    // TODO : make this async
+
     dispatch({ type: heatMapDataPivoting });
     const vizData = pivotHeatMapData(state.businessData);
+    const vizDataWithSections = pivotHeatMapDataWithSections(state.businessData, state.businessData.sections.map((s) => s.sis_section_id));
     dispatch({ type: heatMapDataPivoted, value: vizData });
+    dispatch({ type: heatMapDataWithSectionsPivoted, value: vizDataWithSections });
+    
   }
-
+  
   if (state.visualizationData.heatMapData.length > 0
     && state.controls.selectors.showingRubrics.values.length === 1) {
     dispatch({
@@ -33,12 +36,34 @@ const CompareAssignmentsTab = () => {
     });
   }
 
+  if (state.visualizationData.heatMapData.length > 0
+    && state.controls.selectors.sections.values.length === 2) {
+    console.log(state);
+    dispatch({
+      type: selectorValuesUpdated,
+      selectorKey: 'sections',
+      value: ['Aggregated','By Sections', ...state.businessData.sections.map((s) => s.sis_section_id)],
+    });
+  }
+
+
   const filterAssignment = state.controls.selectors.showingRubrics.selected;
-  const assignmentSet = state.controls.selectors.showingRubrics.selected === 'All assignments'
+  const assignmentSet = (function(selection) { // switch the base of the viz data based on filter selection
+    switch(selection) {
+      case 'Aggregated':
+        return state.visualizationData.heatMapData;
+      case 'By Sections':
+        return state.visualizationData.heatMapDataWithSections;
+      default:
+        return state.visualizationData.heatMapDataWithSections;
+    }
+  })(state.controls.selectors.sections.selected);
+  
+  const filteredAssignmentSet = state.controls.selectors.showingRubrics.selected === 'All assignments'
     ? (
-      state.visualizationData.heatMapData
+      assignmentSet
     ) : (
-      state.visualizationData.heatMapData.filter((rubric) => rubric.name === filterAssignment)
+      assignmentSet.filter((rubric) => rubric.name === filterAssignment)
     );
 
   const loaded = (!state.processing.loadingBusinessData
@@ -46,12 +71,13 @@ const CompareAssignmentsTab = () => {
 
   const card = loaded
     ? (
-      assignmentSet.map((rubric) => (
+      filteredAssignmentSet.map((rubric) => (
         <AssignmentCard
           key={`assignmentCard-${rubric.assignmentId}`}
           assignmentName={rubric.name}
           dataPoints={rubric.dataPoints}
           assignmentId={rubric.assignmentId}
+          sectionId={rubric.sectionId}
         />
       ))
     ) : <Spinner renderTitle="Loading" size="medium" margin="0 0 0 medium" />;
@@ -63,13 +89,22 @@ const CompareAssignmentsTab = () => {
 
   return (
     <div>
-      <Flex justifyItems="space-between" margin="medium 0 medium">
+      <Flex margin="medium 0 medium">
         <Flex.Item>
           <Selector
             options={state.controls.selectors.showingRubrics.values}
             selectorKey="showingRubrics"
             labelText="Show Rubric:"
             selectorValue={state.controls.selectors.showingRubrics.selected}
+            dispatch={dispatch}
+          />
+        </Flex.Item>
+        <Flex.Item>
+          <Selector
+            options={state.controls.selectors.sections.values}
+            selectorKey="sections"
+            labelText="Show Sections:"
+            selectorValue={state.controls.selectors.sections.selected}
             dispatch={dispatch}
           />
         </Flex.Item>

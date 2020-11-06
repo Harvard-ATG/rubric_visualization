@@ -6,10 +6,11 @@ export const AppContext = React.createContext(null);
 
 export const initialState = {
   businessData: {
-    assignments: [], submissions: [], students: [], denormalized_data: [],
+    assignments: [], submissions: [], students: [], sections: [], denormalized_data: [],
   },
   visualizationData: {
     heatMapData: [],
+    heatMapDataWithSections: [],
   },
   processing: {
     loadingBusinessData: true,
@@ -21,9 +22,7 @@ export const initialState = {
   controls: {
     selectors: {
       showingRubrics: { values: ['All assignments'], selected: 'All assignments' },
-      sortBy: { values: ['Due Date'], selected: 'Due Date' },
-      sections: { values: ['All Sections'], selected: 'All Sections' },
-      instructors: { values: ['All Instructors'], selected: 'All Instructors' },
+      sections: { values: ['Aggregated','By Sections'], selected: 'By Sections' },
     },
   },
   navigation: {
@@ -88,6 +87,19 @@ export const reducer = (state, action) => {
         visualizationData: {
           ...state.visualizationData,
           heatMapData: action.value,
+        },
+        processing: {
+          ...state.processing,
+          pivotingHeatMap: false,
+          pivotedHeatMap: true,
+        },
+      };
+    case eventTypes.heatMapDataWithSectionsPivoted:
+      return {
+        ...state,
+        visualizationData: {
+          ...state.visualizationData,
+          heatMapDataWithSections: action.value,
         },
         processing: {
           ...state.processing,

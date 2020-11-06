@@ -9,7 +9,7 @@ import { flatData } from '../utils';
 
 const AssignmentCard = (props) => {
   const {
-    assignmentName, dataPoints, assignmentId,
+    assignmentName, dataPoints, assignmentId, sectionId,
   } = props;
 
   useEffect(() => {
@@ -34,6 +34,11 @@ const AssignmentCard = (props) => {
                 { assignmentName }
               </Text>
             </Flex.Item>
+            <Flex.Item>
+              <Text size="large" weight="light">
+                { sectionId }
+              </Text>
+            </Flex.Item>
           </Flex>
         </div>
         <div id={`heatMap-${assignmentId}`} />
@@ -46,6 +51,7 @@ AssignmentCard.propTypes = {
   assignmentName: PropTypes.string.isRequired,
   dataPoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   assignmentId: PropTypes.number.isRequired,
+  sectionId: PropTypes.string.isRequired,
 };
 
 export default AssignmentCard;
