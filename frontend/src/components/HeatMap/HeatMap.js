@@ -69,7 +69,7 @@ export const drawFlatHeatMap = (id, data) => {
   svg.append('g')
     .call(d3.axisTop(x).tickSize(0));
 
-  // Build X scales and axis:
+  // Build Y scales and axis:
   const y = d3.scaleBand()
     .range([height, 0])
     .domain(myVars)
