@@ -37,17 +37,17 @@ const CompareAssignmentsTab = () => {
   }
 
   if (state.visualizationData.heatMapData.length > 0
-    && state.controls.selectors.sections.values.length === 2) {
-    console.log(state);
+    && state.controls.selectors.sections.values.length === 1) {
     dispatch({
       type: selectorValuesUpdated,
       selectorKey: 'sections',
-      value: ['Aggregated','By Sections', ...state.businessData.sections.map((s) => s.sis_section_id)],
+      value: ['All sections', ...state.businessData.sections.map((s) => s.sis_section_id)],
     });
   }
 
 
   const filterAssignment = state.controls.selectors.showingRubrics.selected;
+  const filterSection = state.controls.selectors.sections.selected;
   const assignmentSet = (function(selection) { // switch the base of the viz data based on filter selection
     switch(selection) {
       case 'Aggregated':
@@ -57,7 +57,7 @@ const CompareAssignmentsTab = () => {
       default:
         return state.visualizationData.heatMapDataWithSections;
     }
-  })(state.controls.selectors.sections.selected);
+  })(state.controls.selectors.showSections.selected);
   
   const filteredAssignmentSet = state.controls.selectors.showingRubrics.selected === 'All assignments'
     ? (
@@ -66,14 +66,25 @@ const CompareAssignmentsTab = () => {
       assignmentSet.filter((rubric) => rubric.name === filterAssignment)
     );
 
+  let filteredSectionSet = filteredAssignmentSet;
+  if(state.controls.selectors.showSections.selected === 'By Sections') {
+    filteredSectionSet = state.controls.selectors.sections.selected === 'All sections'
+    ? (
+      filteredAssignmentSet
+    ) : (
+      filteredAssignmentSet.filter((rubric) => rubric.sectionId === filterSection)
+    );
+  }
+
   const loaded = (!state.processing.loadingBusinessData
     && state.visualizationData.heatMapData.length !== 0);
 
+
   const card = loaded
     ? (
-      filteredAssignmentSet.map((rubric) => (
+      filteredSectionSet.map((rubric) => (
         <AssignmentCard
-          key={`assignmentCard-${rubric.assignmentId}`}
+          key={`assignmentCard-${rubric.assignmentId}-${rubric.sectionId ? rubric.sectionId : ''}`}
           assignmentName={rubric.name}
           dataPoints={rubric.dataPoints}
           assignmentId={rubric.assignmentId}
@@ -85,6 +96,17 @@ const CompareAssignmentsTab = () => {
   const csvLink = loaded
     ? (
       <CsvDownloadLink data={state.businessData.denormalized_data} text=".CSV Download" />
+    ) : '';
+
+  const sectionsSelector = state.controls.selectors.showSections.selected === 'By Sections'
+    ? (
+      <Selector
+        options={state.controls.selectors.sections.values}
+        selectorKey="sections"
+        labelText="Sections:"
+        selectorValue={state.controls.selectors.sections.selected}
+        dispatch={dispatch}
+      />
     ) : '';
 
   return (
@@ -101,13 +123,14 @@ const CompareAssignmentsTab = () => {
         </Flex.Item>
         <Flex.Item>
           <Selector
-            options={state.controls.selectors.sections.values}
-            selectorKey="sections"
+            options={state.controls.selectors.showSections.values}
+            selectorKey="showSections"
             labelText="Show Sections:"
-            selectorValue={state.controls.selectors.sections.selected}
+            selectorValue={state.controls.selectors.showSections.selected}
             dispatch={dispatch}
           />
         </Flex.Item>
+        <Flex.Item>{sectionsSelector}</Flex.Item>
       </Flex>
       <Flex direction="row-reverse" margin="medium 0 medium">
         <Flex.Item>

@@ -22,7 +22,8 @@ export const initialState = {
   controls: {
     selectors: {
       showingRubrics: { values: ['All assignments'], selected: 'All assignments' },
-      sections: { values: ['Aggregated','By Sections'], selected: 'By Sections' },
+      showSections: { values: ['Aggregated','By Sections'], selected: 'By Sections' },
+      sections: { values: ['All sections'], selected: 'All sections'},
     },
   },
   navigation: {
