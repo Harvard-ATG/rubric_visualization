@@ -13,12 +13,6 @@ const AssignmentCard = (props) => {
   } = props;
 
   useEffect(() => {
-    dataPoints.forEach((criterion, index) => {
-      criterion = criterion.sort(function(a, b){
-        return a.maxPoints < b.maxPoints;
-      });
-    });
-
     if (flatData(dataPoints) === true) {
       drawFlatHeatMap(`#heatMap-${assignmentId}`, dataPoints);
     } else {
