@@ -13,7 +13,7 @@ class ViewTests(TestCase):
             denormalized_data = denormalize(data)
             self.assertIs(type(denormalized_data), list)
             self.assertEqual(len(denormalized_data), 120)
-            self.assertEqual(len(denormalized_data[0]), 8)
+            self.assertEqual(len(denormalized_data[0]), 9)
             
     def test_denormalize_none(self):
         denormalized_data = denormalize(None)

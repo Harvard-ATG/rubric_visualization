@@ -14,7 +14,7 @@ export const flatData = (data) => {
 
 export const pivotHeatMapData = (payload) => {
   // this transformation takes into account that not all criteria have the same rating set
-  
+
   const allRubrics = payload.assignments.map((assignment) => {
     const rubric = {
       assignmentId: assignment.id,
@@ -56,15 +56,16 @@ export const pivotHeatMapData = (payload) => {
 
 export const pivotHeatMapDataWithSections = (payload, sections) => {
   // this transformation takes into account that not all criteria have the same rating set
-  
+
   // create a student lookup for student_id(key) and section_id(value) for later use
   const studentLookup = Object.assign(...payload.denormalized_data.map((dp) => {
-    const {student_id, section_id} = dp; // destructure for the data that we need
-    return { [student_id] : section_id }; // apparrently the [] is needed around a computed value for object keys
+    const { student_id: studentId, section_id: sectionId } = dp;
+    // apparrently the [] is needed around a computed value to assign object keys
+    return { [studentId]: sectionId };
   }));
-  
+
   const allRubrics = payload.assignments.map((assignment) => {
-    var rubrics = [];
+    const rubrics = [];
     sections.forEach((section) => {
       const rubric = {
         assignmentId: assignment.id,
@@ -74,7 +75,8 @@ export const pivotHeatMapDataWithSections = (payload, sections) => {
         totalAssessments: payload.submissions.map((sub) => sub.submissions)
           .flat()
           .reduce((acc, curr) => (
-            acc + Number(assignment.id === curr.assignment_id && studentLookup[curr.user_id] === section)
+            acc + Number(assignment.id === curr.assignment_id
+              && studentLookup[curr.user_id] === section)
           ), 0),
         dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
           const dataPoint = {
@@ -101,8 +103,7 @@ export const pivotHeatMapDataWithSections = (payload, sections) => {
       });
 
       rubrics.push(rubric);
-    
-    })
+    });
     return rubrics.flat();
   });
   return allRubrics.flat();

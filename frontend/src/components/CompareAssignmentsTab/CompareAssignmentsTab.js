@@ -9,7 +9,20 @@ import Selector from '../Selector/Selector';
 
 import { AppContext } from '../AppState';
 import { pivotHeatMapData, pivotHeatMapDataWithSections } from '../utils';
-import { heatMapDataPivoting, heatMapDataPivoted, heatMapDataWithSectionsPivoted, selectorValuesUpdated } from '../eventTypes';
+import {
+  heatMapDataPivoting, heatMapDataPivoted, heatMapDataWithSectionsPivoted, selectorValuesUpdated,
+} from '../eventTypes';
+
+const switchVizData = (selection, data) => {
+  switch (selection) {
+    case 'Aggregated':
+      return data.heatMapData;
+    case 'By Sections':
+      return data.heatMapDataWithSections;
+    default:
+      return data.heatMapDataWithSections;
+  }
+};
 
 const CompareAssignmentsTab = () => {
   const { state, dispatch } = useContext(AppContext);
@@ -18,15 +31,14 @@ const CompareAssignmentsTab = () => {
   if (state.processing.loadingBusinessData === false
     && state.processing.pivotedHeatMap === false
     && state.processing.pivotingHeatMap === false) {
-
     dispatch({ type: heatMapDataPivoting });
     const vizData = pivotHeatMapData(state.businessData);
-    const vizDataWithSections = pivotHeatMapDataWithSections(state.businessData, state.businessData.sections.map((s) => s.sis_section_id));
+    const vizDataWithSections = pivotHeatMapDataWithSections(state.businessData,
+      state.businessData.sections.map((s) => s.sis_section_id));
     dispatch({ type: heatMapDataPivoted, value: vizData });
     dispatch({ type: heatMapDataWithSectionsPivoted, value: vizDataWithSections });
-    
   }
-  
+
   if (state.visualizationData.heatMapData.length > 0
     && state.controls.selectors.showingRubrics.values.length === 1) {
     dispatch({
@@ -48,17 +60,11 @@ const CompareAssignmentsTab = () => {
 
   const filterAssignment = state.controls.selectors.showingRubrics.selected;
   const filterSection = state.controls.selectors.sections.selected;
-  const assignmentSet = (function(selection) { // switch the base of the viz data based on filter selection
-    switch(selection) {
-      case 'Aggregated':
-        return state.visualizationData.heatMapData;
-      case 'By Sections':
-        return state.visualizationData.heatMapDataWithSections;
-      default:
-        return state.visualizationData.heatMapDataWithSections;
-    }
-  })(state.controls.selectors.showSections.selected);
-  
+  const assignmentSet = switchVizData(
+    state.controls.selectors.showSections.selected,
+    state.visualizationData,
+  );
+
   const filteredAssignmentSet = state.controls.selectors.showingRubrics.selected === 'All assignments'
     ? (
       assignmentSet
@@ -67,13 +73,13 @@ const CompareAssignmentsTab = () => {
     );
 
   let filteredSectionSet = filteredAssignmentSet;
-  if(state.controls.selectors.showSections.selected === 'By Sections') {
+  if (state.controls.selectors.showSections.selected === 'By Sections') {
     filteredSectionSet = state.controls.selectors.sections.selected === 'All sections'
-    ? (
-      filteredAssignmentSet
-    ) : (
-      filteredAssignmentSet.filter((rubric) => rubric.sectionId === filterSection)
-    );
+      ? (
+        filteredAssignmentSet
+      ) : (
+        filteredAssignmentSet.filter((rubric) => rubric.sectionId === filterSection)
+      );
   }
 
   const loaded = (!state.processing.loadingBusinessData

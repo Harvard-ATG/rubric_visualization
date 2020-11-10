@@ -1,6 +1,7 @@
 import React from 'react';
 import axe from 'axe-core';
 import { mockFetchSuccess, mountToDoc } from '../test/test-helpers';
+import { testBusinessData } from '../test/test-payload';
 
 import App from './App';
 
@@ -12,14 +13,7 @@ describe('My Test Suite', () => {
   it('Tests with axe-core', async (done) => {
     global.django = { course_id: 12345 };
     jest.setTimeout(10000);
-    global.fetch = await mockFetchSuccess({
-      assignments: [],
-      submissions: [],
-      students: [
-        { id: 1, sortable_name: 'bill' },
-        { id: 2, sortable_name: 'sue' },
-      ],
-    });
+    global.fetch = await mockFetchSuccess(testBusinessData);
     const appComponent = await mountToDoc(<App />);
     const appNode = appComponent.getDOMNode();
     const config = { rules: {} };
