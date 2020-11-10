@@ -90,7 +90,7 @@ const CompareAssignmentsTab = () => {
     ? (
       filteredSectionSet.map((rubric) => (
         <AssignmentCard
-          key={`assignmentCard-${rubric.assignmentId}-${rubric.sectionId ? rubric.sectionId : ''}`}
+          key={`assignmentCard-${rubric.assignmentId}-${rubric.sectionId || ''}`}
           assignmentName={rubric.name}
           dataPoints={rubric.dataPoints}
           assignmentId={rubric.assignmentId}

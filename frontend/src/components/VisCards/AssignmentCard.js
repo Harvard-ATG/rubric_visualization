@@ -12,11 +12,13 @@ const AssignmentCard = (props) => {
     assignmentName, dataPoints, assignmentId, sectionId,
   } = props;
 
+  const identifier = `heatMap-${assignmentId}-${sectionId || ''}`;
+
   useEffect(() => {
     if (flatData(dataPoints) === true) {
-      drawFlatHeatMap(`#heatMap-${assignmentId}`, dataPoints);
+      drawFlatHeatMap(`#${identifier}`, dataPoints);
     } else {
-      drawHeatMap(`#heatMap-${assignmentId}`, dataPoints);
+      drawHeatMap(`#${identifier}`, dataPoints);
     }
   }, [dataPoints]);
 
@@ -41,17 +43,21 @@ const AssignmentCard = (props) => {
             </Flex.Item>
           </Flex>
         </div>
-        <div id={`heatMap-${assignmentId}`} />
+        <div id={identifier} />
       </View>
     </div>
   );
+};
+
+AssignmentCard.defaultProps = {
+  sectionId: null,
 };
 
 AssignmentCard.propTypes = {
   assignmentName: PropTypes.string.isRequired,
   dataPoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   assignmentId: PropTypes.number.isRequired,
-  sectionId: PropTypes.string.isRequired,
+  sectionId: PropTypes.string,
 };
 
 export default AssignmentCard;
