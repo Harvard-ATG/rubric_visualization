@@ -42,6 +42,7 @@ export const pivotHeatMapData = (payload) => {
     };
 
     rubric.dataPoints.forEach((criterion) => {
+      criterion.sort((a, b) => a.maxPoints < b.maxPoints);
       criterion.forEach((rating) => {
         rating.value = rubric.totalAssessments !== 0
           ? (Number(((rating.count / rubric.totalAssessments) * 100).toFixed()))
