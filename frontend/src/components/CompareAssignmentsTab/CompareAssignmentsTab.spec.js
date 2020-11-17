@@ -8,7 +8,6 @@ import AssignmentCard from '../VisCards/AssignmentCard';
 import { AppContext, initialState } from '../AppState';
 import { pivotHeatMapData, pivotHeatMapDataWithSections } from '../utils';
 
-
 describe('<CompareAssignmentsTab />', () => {
   it('component mounts with no vis cards', async () => {
     const component = await mount(

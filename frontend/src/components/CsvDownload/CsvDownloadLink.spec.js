@@ -4,7 +4,6 @@ import '../../test/setUpTests';
 
 import CsvDownloadLink from './CsvDownloadLink';
 
-
 const testData = [
   { firstname: 'Ahmed', lastname: 'Tomi', email: 'testEmail1@test.org' },
   { firstname: 'Raed', lastname: 'Labes', email: 'testEmail2@test.org' },

@@ -11,7 +11,6 @@ export const flatData = (data) => {
   return ratingSets.every((curr) => curr.toString() === ratingSets[0].toString());
 };
 
-
 export const pivotHeatMapData = (payload) => {
   // this transformation takes into account that not all criteria have the same rating set
 

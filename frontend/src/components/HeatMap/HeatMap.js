@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 
-
 /**
  * Flatten data when it comes in and draw heat map visualization for rubric performance.
  * @param {string} id ID of the div to target to draw the vis.
@@ -98,7 +97,6 @@ export const drawFlatHeatMap = (id, data) => {
     .attr('height', y.bandwidth() - 20)
     .style('fill', (d) => myColor(d.value));
 };
-
 
 /**
  * Draw heat map visualization for rubric performance.
