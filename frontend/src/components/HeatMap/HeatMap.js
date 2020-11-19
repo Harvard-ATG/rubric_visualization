@@ -51,9 +51,9 @@ export const drawFlatHeatMap = (id, data) => {
 
   const widthValue = 450;
   const heightValue = 450;
-  const nodeList = document.querySelectorAll(`${id} > svg`);
-  if (nodeList && nodeList.length === 1) {
-    nodeList[0].parentNode.removeChild(nodeList[0]);
+  const node = document.querySelector(`${id} > svg`);
+  if (node) {
+    node.parentNode.removeChild(node);
   }
 
   const svg = d3.select(`${id}`)

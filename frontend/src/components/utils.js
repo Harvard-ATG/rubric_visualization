@@ -44,7 +44,7 @@ export const pivotHeatMapData = (payload) => {
       criterion.sort((a, b) => a.maxPoints < b.maxPoints);
       criterion.forEach((rating) => {
         rating.value = rubric.totalAssessments !== 0
-          ? (Number(((rating.count / rubric.totalAssessments) * 100).toFixed()))
+          ? Math.round(((rating.count / rubric.totalAssessments) * 100))
           : undefined;
       });
     });
@@ -58,11 +58,10 @@ export const pivotHeatMapDataWithSections = (payload, sections) => {
   // this transformation takes into account that not all criteria have the same rating set
 
   // create a student lookup for student_id(key) and section_id(value) for later use
-  const studentLookup = Object.assign(...payload.denormalized_data.map((dp) => {
-    const { student_id: studentId, section_id: sectionId } = dp;
+  const studentLookup = payload.denormalized_data.reduce((acc, curr) => {
     // apparrently the [] is needed around a computed value to assign object keys
-    return { [studentId]: sectionId };
-  }));
+    return Object.assign(acc, { [curr.student_id] : curr.section_id });
+  }, {});
 
   const allRubrics = payload.assignments.map((assignment) => {
     const rubrics = [];
@@ -98,7 +97,7 @@ export const pivotHeatMapDataWithSections = (payload, sections) => {
         criterion.sort((a, b) => a.maxPoints < b.maxPoints);
         criterion.forEach((rating) => {
           rating.value = rubric.totalAssessments !== 0
-            ? (Number(((rating.count / rubric.totalAssessments) * 100).toFixed()))
+            ? Math.round(((rating.count / rubric.totalAssessments) * 100))
             : undefined;
         });
       });
