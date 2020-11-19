@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 
-
 /**
  * Flatten data when it comes in and draw heat map visualization for rubric performance.
  * @param {string} id ID of the div to target to draw the vis.
@@ -52,6 +51,11 @@ export const drawFlatHeatMap = (id, data) => {
 
   const widthValue = 450;
   const heightValue = 450;
+  const node = document.querySelector(`${id} > svg`);
+  if (node) {
+    node.parentNode.removeChild(node);
+  }
+
   const svg = d3.select(`${id}`)
     .append('svg')
     .attr('viewBox', `0 0 ${widthValue} ${heightValue}`)
@@ -94,7 +98,6 @@ export const drawFlatHeatMap = (id, data) => {
     .style('fill', (d) => myColor(d.value));
 };
 
-
 /**
  * Draw heat map visualization for rubric performance.
  * @param {string} id ID of the div to target to draw the vis.
@@ -120,6 +123,12 @@ export const drawHeatMap = (id, data) => {
 
   const widthValue = 450;
   const heightValue = 450;
+
+  const node = document.querySelector(`${id} > svg`);
+  if (node) {
+    node.parentNode.removeChild(node);
+  }
+
   const svg = d3.select(`${id}`)
     .append('svg')
     .attr('viewBox', `0 0 ${widthValue} ${heightValue}`)

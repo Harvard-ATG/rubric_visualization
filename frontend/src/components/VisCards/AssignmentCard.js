@@ -1,51 +1,57 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { Flex } from '@instructure/ui-flex/lib/Flex';
-import { View } from '@instructure/ui-view/lib/View';
-import { Text } from '@instructure/ui-text/lib/Text';
+import { Flex, Text, View } from '@instructure/ui';
 import { drawHeatMap, drawFlatHeatMap } from '../HeatMap/HeatMap';
 import { flatData } from '../utils';
 
 const AssignmentCard = (props) => {
   const {
-    assignmentName, dataPoints, assignmentId,
+    assignmentName, dataPoints, assignmentId, sectionId,
   } = props;
+
+  const identifier = `heatMap-${assignmentId}-${sectionId || ''}`;
 
   useEffect(() => {
     if (flatData(dataPoints) === true) {
-      drawFlatHeatMap(`#heatMap-${assignmentId}`, dataPoints);
+      drawFlatHeatMap(`#${identifier}`, dataPoints);
     } else {
-      drawHeatMap(`#heatMap-${assignmentId}`, dataPoints);
+      drawHeatMap(`#${identifier}`, dataPoints);
     }
   }, [dataPoints]);
 
   return (
     <div className="vis-card">
-      <View
-        as="section"
-        padding="small"
-        shadow="resting"
-      >
+      <View as="section" padding="small" shadow="resting">
         <div className="section-title">
           <Flex justifyItems="space-between">
             <Flex.Item>
               <Text size="large" weight="light">
-                { assignmentName }
+                {assignmentName}
+              </Text>
+            </Flex.Item>
+            <Flex.Item>
+              <Text size="large" weight="light">
+                {sectionId}
               </Text>
             </Flex.Item>
           </Flex>
         </div>
-        <div id={`heatMap-${assignmentId}`} />
+        <div id={identifier} />
       </View>
     </div>
   );
+};
+
+AssignmentCard.defaultProps = {
+  sectionId: null,
 };
 
 AssignmentCard.propTypes = {
   assignmentName: PropTypes.string.isRequired,
   dataPoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   assignmentId: PropTypes.number.isRequired,
+  sectionId: PropTypes.string,
 };
 
 export default AssignmentCard;

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
-import { SimpleSelect } from '@instructure/ui-simple-select/lib/SimpleSelect';
+import { SimpleSelect } from '@instructure/ui-simple-select';
 import { selectorSelected } from '../eventTypes';
 
 const Selector = (props) => {
@@ -14,9 +14,11 @@ const Selector = (props) => {
       renderLabel={labelText}
       assistiveText="Use arrow keys to navigate options."
       value={selectorValue}
-      onChange={(event) => dispatch(
-        { type: selectorSelected, selectorKey, value: event.target.innerText },
-      )}
+      onChange={(event) => dispatch({
+        type: selectorSelected,
+        selectorKey,
+        value: event.target.innerText,
+      })}
     >
       {options.map((option, index) => (
         <SimpleSelect.Option
@@ -24,7 +26,7 @@ const Selector = (props) => {
           id={`${selectorKey}-${index}`}
           value={option}
         >
-          { option }
+          {option}
         </SimpleSelect.Option>
       ))}
     </SimpleSelect>

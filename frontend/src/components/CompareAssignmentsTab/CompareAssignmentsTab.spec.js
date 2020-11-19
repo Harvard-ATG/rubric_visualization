@@ -6,8 +6,7 @@ import { testBusinessData } from '../../test/test-payload';
 import CompareAssignmentsTab from './CompareAssignmentsTab';
 import AssignmentCard from '../VisCards/AssignmentCard';
 import { AppContext, initialState } from '../AppState';
-import { pivotHeatMapData } from '../utils';
-
+import { pivotHeatMapData, pivotHeatMapDataWithSections } from '../utils';
 
 describe('<CompareAssignmentsTab />', () => {
   it('component mounts with no vis cards', async () => {
@@ -20,6 +19,7 @@ describe('<CompareAssignmentsTab />', () => {
   });
 
   it('component mounts with three vis cards', async () => {
+    const sections = testBusinessData.sections.map((s) => s.sis_section_id);
     const newState = {
       ...initialState,
       businessData: testBusinessData,
@@ -30,6 +30,7 @@ describe('<CompareAssignmentsTab />', () => {
       visualizationData: {
         ...initialState.visualizationData,
         heatMapData: pivotHeatMapData(testBusinessData),
+        heatMapDataWithSections: pivotHeatMapDataWithSections(testBusinessData, sections),
       },
     };
 

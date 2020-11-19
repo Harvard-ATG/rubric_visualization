@@ -13,6 +13,7 @@ export const flatData = (data) => {
 
 export const pivotHeatMapData = (payload) => {
   // this transformation takes into account that not all criteria have the same rating set
+
   const allRubrics = payload.assignments.map((assignment) => {
     const rubric = {
       assignmentId: assignment.id,
@@ -43,7 +44,7 @@ export const pivotHeatMapData = (payload) => {
       criterion.sort((a, b) => a.maxPoints < b.maxPoints);
       criterion.forEach((rating) => {
         rating.value = rubric.totalAssessments !== 0
-          ? (Number(((rating.count / rubric.totalAssessments) * 100).toFixed()))
+          ? Math.round(((rating.count / rubric.totalAssessments) * 100))
           : undefined;
       });
     });
@@ -51,4 +52,57 @@ export const pivotHeatMapData = (payload) => {
     return rubric;
   });
   return allRubrics;
+};
+
+export const pivotHeatMapDataWithSections = (payload, sections) => {
+  // this transformation takes into account that not all criteria have the same rating set
+
+  // create a student lookup for student_id(key) and section_id(value) for later use
+  const studentLookup = payload.denormalized_data.reduce((acc, curr) => (
+    Object.assign(acc, { [curr.student_id]: curr.section_id })), {});
+
+  const allRubrics = payload.assignments.map((assignment) => {
+    const rubrics = [];
+    sections.forEach((section) => {
+      const rubric = {
+        assignmentId: assignment.id,
+        name: assignment.name,
+        dueDate: assignment.due_at,
+        sectionId: section,
+        totalAssessments: payload.submissions.map((sub) => sub.submissions)
+          .flat()
+          .reduce((acc, curr) => (
+            acc + Number(assignment.id === curr.assignment_id
+              && studentLookup[curr.user_id] === section)
+          ), 0),
+        dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
+          const dataPoint = {
+            criterionId: criterion.id,
+            criterion: criterion.description,
+            ratingDescription: rating.description,
+            maxPoints: rating.points,
+            count: payload.denormalized_data.reduce((acc, curr) => (
+              acc + Number(curr.criterion_id === criterion.id
+                && curr.rating === rating.description
+                && curr.assignment_id === assignment.id
+                && curr.section_id === section)), 0),
+          };
+          return dataPoint;
+        })),
+      };
+
+      rubric.dataPoints.forEach((criterion) => {
+        criterion.sort((a, b) => a.maxPoints < b.maxPoints);
+        criterion.forEach((rating) => {
+          rating.value = rubric.totalAssessments !== 0
+            ? Math.round(((rating.count / rubric.totalAssessments) * 100))
+            : undefined;
+        });
+      });
+
+      rubrics.push(rubric);
+    });
+    return rubrics.flat();
+  });
+  return allRubrics.flat();
 };

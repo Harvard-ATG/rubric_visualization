@@ -246,6 +246,8 @@ CANVAS_OAUTH_SCOPES = [
     'url:GET|/api/v1/courses/:course_id/assignments/:assignment_id/submissions',
     'url:GET|/api/v1/courses/:course_id/rubrics',
     'url:GET|/api/v1/courses/:course_id/rubrics/:id',
+    'url:GET|/api/v1/courses/:course_id/sections',
+    'url:GET|/api/v1/courses/:course_id/sections/:id',
 ]
 
 # Settings for the canvas_sdk (https://github.com/penzance/canvas_python_sdk)

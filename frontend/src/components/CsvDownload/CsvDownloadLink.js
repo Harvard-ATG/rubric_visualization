@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Text } from '@instructure/ui-text/lib/Text';
+import { Text } from '@instructure/ui';
 
 import { CSVLink } from 'react-csv';
 
@@ -10,7 +10,7 @@ const CsvDownloadLink = (props) => {
 
   return (
     <CSVLink data={data} headers={headers}>
-      <Text>{ text }</Text>
+      <Text>{text}</Text>
     </CSVLink>
   );
 };

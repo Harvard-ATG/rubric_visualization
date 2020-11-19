@@ -1,6 +1,63 @@
 export const emptyObject = {};
 
 export const testBusinessData = {
+  sections: [
+    {
+      course_id: 53582,
+      created_at: '2018-08-02T14:57:45Z',
+      end_at: null,
+      id: 83381,
+      integration_id: null,
+      name: 'COLGSAS SB-tom 001',
+      nonxlist_course_id: null,
+      restrict_enrollments_to_section_dates: false,
+      sis_course_id: '469436',
+      sis_section_id: '469436',
+      start_at: null,
+      students: [
+        {
+          sortable_name: 'Jozy, Chapman',
+          id: 1,
+        },
+        {
+          sortable_name: 'Chopin, George',
+          id: 2,
+        },
+        {
+          sortable_name: 'Peter, Paul',
+          id: 3,
+        },
+        {
+          sortable_name: 'Turn, Bob',
+          id: 4,
+        },
+        {
+          sortable_name: 'Dove, Dip',
+          id: 5,
+        },
+        {
+          sortable_name: 'In, Bob',
+          id: 6,
+        },
+        {
+          sortable_name: 'Potter, Kol',
+          id: 7,
+        },
+        {
+          sortable_name: 'Tuesday, Winter',
+          id: 8,
+        },
+        {
+          sortable_name: 'Moon, Clerk',
+          id: 9,
+        },
+        {
+          sortable_name: 'Alright, Madeline',
+          id: 10,
+        },
+      ],
+    },
+  ],
   assignments: [
     {
       id: 222064,
