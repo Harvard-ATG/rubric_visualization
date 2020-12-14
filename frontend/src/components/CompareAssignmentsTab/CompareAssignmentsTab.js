@@ -6,22 +6,23 @@ import CsvDownloadLink from '../CsvDownload/CsvDownloadLink';
 import Selector from '../Selector/Selector';
 
 import { AppContext } from '../AppState';
-import { pivotHeatMapData, pivotHeatMapDataWithSections } from '../utils';
+import { pivotHeatMapData, squashRubricData } from '../utils';
+
 import {
   heatMapDataPivoting,
   heatMapDataPivoted,
-  heatMapDataWithSectionsPivoted,
   selectorValuesUpdated,
 } from '../eventTypes';
 
 const switchVizData = (selection, data) => {
   switch (selection) {
     case 'Aggregated':
-      return data.heatMapData;
+      let clonedData = JSON.parse(JSON.stringify(data.heatMapData));
+      return squashRubricData(clonedData);
     case 'By Sections':
-      return data.heatMapDataWithSections;
+      return data.heatMapData;
     default:
-      return data.heatMapDataWithSections;
+      return data.heatMapData;
   }
 };
 
@@ -35,15 +36,13 @@ const CompareAssignmentsTab = () => {
     && state.processing.pivotingHeatMap === false
   ) {
     dispatch({ type: heatMapDataPivoting });
-    const vizData = pivotHeatMapData(state.businessData);
-    const vizDataWithSections = pivotHeatMapDataWithSections(
+    const vizData = pivotHeatMapData(
       state.businessData,
       state.businessData.sections.map((s) => s.sis_section_id),
     );
-    dispatch({ type: heatMapDataPivoted, value: vizData });
     dispatch({
-      type: heatMapDataWithSectionsPivoted,
-      value: vizDataWithSections,
+      type: heatMapDataPivoted,
+      value: vizData,
     });
   }
 
