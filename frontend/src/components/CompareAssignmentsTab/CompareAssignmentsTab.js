@@ -168,9 +168,9 @@ const CompareAssignmentsTab = () => {
       <Flex direction="row-reverse" margin="medium 0 medium">
         <Flex.Item>{csvLink}</Flex.Item>
       </Flex>
-      
+
       {body}
-      
+
     </div>
   );
 };
