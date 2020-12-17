@@ -15,6 +15,7 @@
   "dependencies": {
     "@instructure/canvas-theme": "^7.3.0",
     "@instructure/ui": "^7.3.0",
+    "@instructure/ui-a11y-content": "^7.3.2",
     "@instructure/ui-simple-select": "^7.3.0",
     "d3": "^5.16.0",
     "prop-types": "^15.7.2",

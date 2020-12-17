@@ -22,7 +22,9 @@ export const initialState = {
     selectors: {
       showingRubrics: { values: ['All assignments'], selected: 'All assignments' },
       showSections: { values: ['Aggregated', 'By Sections'], selected: 'By Sections' },
-      sections: { values: ['All sections'], selected: 'All sections' },
+    },
+    checkLists: {
+      sections: { values: [], checked: [] },
     },
   },
   navigation: {
@@ -41,6 +43,43 @@ const updateSelectorValues = (key, value, state) => {
 const updateSelectorSelection = (key, value, state) => {
   const returnState = { ...state };
   returnState.controls.selectors[key].selected = value;
+  return returnState;
+};
+
+// Helper to refactor the process of updating a selector's set of choices
+const updateCheckListValues = (key, value, state) => {
+  const returnState = { ...state };
+  returnState.controls.checkLists[key].values = value;
+  returnState.controls.checkLists[key].checked = value;
+  return returnState;
+};
+
+// Helper to refactor the process of updating a checklist select-all
+const updateCheckListSelectionAll = (key, state) => {
+  const returnState = { ...state };
+  const list = returnState.controls.checkLists[key];
+  if (
+    (list.checked.length > 0 && list.checked.length < list.values.length)
+    || list.checked.length === list.values.length
+  ) {
+    // clear all
+    returnState.controls.checkLists[key].checked = [];
+    return returnState;
+  }
+  // check all
+  returnState.controls.checkLists[key].checked = [...returnState.controls.checkLists[key].values];
+  return returnState;
+};
+
+// Helper to refactor the process of updating a checklist single selection
+const updateCheckListSelection = (key, value, state) => {
+  const returnState = { ...state };
+  if (returnState.controls.checkLists[key].checked.indexOf(value) !== -1) {
+    returnState.controls.checkLists[key].checked = returnState.controls.checkLists[key].checked
+      .filter((v) => v !== value);
+  } else {
+    returnState.controls.checkLists[key].checked.push(value);
+  }
   return returnState;
 };
 
@@ -99,6 +138,7 @@ export const reducer = (state, action) => {
         ...state,
         processing: {
           ...state.processing,
+          pivotingHeatMap: false,
           error: true,
           errorMessage: action.value,
         },
@@ -107,6 +147,12 @@ export const reducer = (state, action) => {
       return updateSelectorValues(action.selectorKey, action.value, state);
     case eventTypes.selectorSelected:
       return updateSelectorSelection(action.selectorKey, action.value, state);
+    case eventTypes.checkListValuesUpdated:
+      return updateCheckListValues(action.checkListKey, action.value, state);
+    case eventTypes.checkListCheckedAll:
+      return updateCheckListSelectionAll(action.checkListKey, state);
+    case eventTypes.checkBoxChecked:
+      return updateCheckListSelection(action.checkListKey, action.value, state);
     default:
       return state;
   }

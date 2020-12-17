@@ -6,3 +6,6 @@ export const heatMapDataPivoted = 'heatMapDataPivoted';
 export const heatMapDataPivotErrored = 'heatMapDataPivotErrored';
 export const selectorValuesUpdated = 'selectorValuesUpdated';
 export const selectorSelected = 'selectorSelected';
+export const checkListValuesUpdated = 'checkListValuesUpdated';
+export const checkListCheckedAll = 'checkListCheckedAll';
+export const checkBoxChecked = 'checkBoxChecked';

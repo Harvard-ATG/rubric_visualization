@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Flex, Spinner } from '@instructure/ui';
 
 import AssignmentCard from '../VisCards/AssignmentCard';
 import CsvDownloadLink from '../CsvDownload/CsvDownloadLink';
 import Selector from '../Selector/Selector';
+import CheckList from '../CheckBox/CheckList';
 
 import { AppContext } from '../AppState';
 import { pivotHeatMapData, squashRubricData } from '../utils';
@@ -12,13 +13,15 @@ import {
   heatMapDataPivoting,
   heatMapDataPivoted,
   selectorValuesUpdated,
+  checkListValuesUpdated,
 } from '../eventTypes';
 
 const switchVizData = (selection, data) => {
   switch (selection) {
-    case 'Aggregated':
-      let clonedData = JSON.parse(JSON.stringify(data.heatMapData));
+    case 'Aggregated': {
+      const clonedData = JSON.parse(JSON.stringify(data.heatMapData));
       return squashRubricData(clonedData);
+    }
     case 'By Sections':
       return data.heatMapData;
     default:
@@ -29,53 +32,51 @@ const switchVizData = (selection, data) => {
 const CompareAssignmentsTab = () => {
   const { state, dispatch } = useContext(AppContext);
 
-  // TODO: these transformations and updates to state need to be re-evaluated
-  if (
-    state.processing.loadingBusinessData === false
-    && state.processing.pivotedHeatMap === false
-    && state.processing.pivotingHeatMap === false
-  ) {
-    dispatch({ type: heatMapDataPivoting });
-    const vizData = pivotHeatMapData(
-      state.businessData,
-      state.businessData.sections.map((s) => s.sis_section_id),
-    );
-    dispatch({
-      type: heatMapDataPivoted,
-      value: vizData,
-    });
-  }
+  // any dispatch or update to state should be inside a useEffect hook to make sure that
+  // we are not updating state in the middle of a render
+  useEffect(() => {
+    // TODO: these transformations and updates to state need to be re-evaluated
+    if (
+      state.processing.loadingBusinessData === false
+      && state.processing.pivotedHeatMap === false
+      && state.processing.pivotingHeatMap === false
+    ) {
+      dispatch({ type: heatMapDataPivoting });
+      const vizData = pivotHeatMapData(state.businessData);
+      dispatch({
+        type: heatMapDataPivoted,
+        value: vizData,
+      });
+    }
 
-  if (
-    state.visualizationData.heatMapData.length > 0
-    && state.controls.selectors.showingRubrics.values.length === 1
-  ) {
-    dispatch({
-      type: selectorValuesUpdated,
-      selectorKey: 'showingRubrics',
-      value: [
-        'All assignments',
-        ...state.visualizationData.heatMapData.map((r) => r.name),
-      ],
-    });
-  }
+    if (
+      state.visualizationData.heatMapData.length > 0
+      && state.controls.selectors.showingRubrics.values.length === 1
+    ) {
+      dispatch({
+        type: selectorValuesUpdated,
+        selectorKey: 'showingRubrics',
+        value: [
+          'All assignments',
+          ...state.visualizationData.heatMapData.map((r) => r.name),
+        ],
+      });
+    }
 
-  if (
-    state.visualizationData.heatMapData.length > 0
-    && state.controls.selectors.sections.values.length === 1
-  ) {
-    dispatch({
-      type: selectorValuesUpdated,
-      selectorKey: 'sections',
-      value: [
-        'All sections',
-        ...state.businessData.sections.map((s) => s.sis_section_id),
-      ],
-    });
-  }
+    if (
+      state.visualizationData.heatMapData.length > 0
+      && state.controls.checkLists.sections.values.length === 0
+    ) {
+      dispatch({
+        type: checkListValuesUpdated,
+        checkListKey: 'sections',
+        value: [...state.businessData.sections.map((s) => s.sis_section_id)],
+      });
+    }
+  });
 
   const filterAssignment = state.controls.selectors.showingRubrics.selected;
-  const filterSection = state.controls.selectors.sections.selected;
+  const filterSection = state.controls.checkLists.sections.checked;
   const assignmentSet = switchVizData(
     state.controls.selectors.showSections.selected,
     state.visualizationData,
@@ -84,14 +85,11 @@ const CompareAssignmentsTab = () => {
   const filteredAssignmentSet = state.controls.selectors.showingRubrics.selected === 'All assignments'
     ? assignmentSet
     : assignmentSet.filter((rubric) => rubric.name === filterAssignment);
-
   let filteredSectionSet = filteredAssignmentSet;
   if (state.controls.selectors.showSections.selected === 'By Sections') {
-    filteredSectionSet = state.controls.selectors.sections.selected === 'All sections'
+    filteredSectionSet = filterSection.length === state.controls.checkLists.sections.values.length
       ? filteredAssignmentSet
-      : filteredAssignmentSet.filter(
-        (rubric) => rubric.sectionId === filterSection,
-      );
+      : filteredAssignmentSet.filter((rubric) => filterSection.indexOf(rubric.sectionId) !== -1);
   }
 
   const loaded = !state.processing.loadingBusinessData
@@ -120,12 +118,12 @@ const CompareAssignmentsTab = () => {
     ''
   );
 
-  const sectionsSelector = state.controls.selectors.showSections.selected === 'By Sections' ? (
-    <Selector
-      options={state.controls.selectors.sections.values}
-      selectorKey="sections"
-      labelText="Sections:"
-      selectorValue={state.controls.selectors.sections.selected}
+  const sectionsCheckList = state.controls.selectors.showSections.selected === 'By Sections' ? (
+    <CheckList
+      list={state.controls.checkLists.sections.values}
+      checkListKey="sections"
+      listType="sections"
+      checkListChecked={state.controls.checkLists.sections.checked}
       dispatch={dispatch}
     />
   ) : (
@@ -153,12 +151,12 @@ const CompareAssignmentsTab = () => {
             dispatch={dispatch}
           />
         </Flex.Item>
-        <Flex.Item>{sectionsSelector}</Flex.Item>
       </Flex>
       <Flex direction="row-reverse" margin="medium 0 medium">
         <Flex.Item>{csvLink}</Flex.Item>
       </Flex>
-      <Flex justifyItems="center">
+      <Flex>
+        <Flex.Item align="start" size="25%">{sectionsCheckList}</Flex.Item>
         <Flex.Item>{card}</Flex.Item>
       </Flex>
     </div>

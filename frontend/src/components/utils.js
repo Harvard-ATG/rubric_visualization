@@ -11,12 +11,15 @@ export const flatData = (data) => {
   return ratingSets.every((curr) => curr.toString() === ratingSets[0].toString());
 };
 
-export const pivotHeatMapData = (payload, sections) => {
+export const pivotHeatMapData = (payload) => {
   // this transformation takes into account that not all criteria have the same rating set
 
   // create a student lookup for student_id(key) and section_id(value) for later use
   const studentLookup = payload.denormalized_data.reduce((acc, curr) => (
     Object.assign(acc, { [curr.student_id]: curr.section_id })), {});
+
+  // extract the sections for use
+  const sections = payload.sections.map((s) => s.sis_section_id);
 
   const allRubrics = payload.assignments.map((assignment) => {
     const rubrics = [];
@@ -64,20 +67,14 @@ export const pivotHeatMapData = (payload, sections) => {
   return allRubrics.flat();
 };
 
-
 export const squashRubricData = (data) => {
-  
-  let asgnmntOb = {};
+  const asgnmntOb = {};
   data.forEach((a) => {
-    if(!(a.assignmentId in asgnmntOb)) {
+    if (!(a.assignmentId in asgnmntOb)) {
       asgnmntOb[a.assignmentId] = {
         totalAssessments: a.totalAssessments,
-        dataPoints: a.dataPoints.reduce((acc, curr) => {
-          return Object.assign(acc, ...curr.map((dp) => {
-            return {[`${dp.criterionId}-${dp.ratingDescription}`]: dp.count};
-          }));
-        }, {})
-      }
+        dataPoints: a.dataPoints.reduce((acc, curr) => Object.assign(acc, ...curr.map((dp) => ({ [`${dp.criterionId}-${dp.ratingDescription}`]: dp.count }))), {}),
+      };
     } else {
       asgnmntOb[a.assignmentId].totalAssessments += a.totalAssessments;
       a.dataPoints.forEach((arr) => {
@@ -87,21 +84,24 @@ export const squashRubricData = (data) => {
       });
     }
   });
-  
-  let returnValue = Object.keys(asgnmntOb).map((asngmntKey) => {
+
+  const returnValue = Object.keys(asgnmntOb).map((asngmntKey) => {
     let ob;
-    for(let i = 0; i < data.length; i++){
-      if(data[i].assignmentId.toString() === asngmntKey) {
+    const reAssignOb = (val) => {
+      val.dataPoints.forEach((arr) => {
+        arr.forEach((dp) => {
+          dp.count = asgnmntOb[asngmntKey].dataPoints[`${dp.criterionId}-${dp.ratingDescription}`];
+          dp.value = Math.round(((dp.count / ob.totalAssessments) * 100));
+        });
+        arr.sort((a, b) => a.maxPoints < b.maxPoints);
+      });
+    };
+    for (let i = 0; i < data.length; i += 1) {
+      if (data[i].assignmentId.toString() === asngmntKey) {
         ob = data[i];
         delete ob.sectionId;
         ob.totalAssessments = asgnmntOb[asngmntKey].totalAssessments;
-        ob.dataPoints.forEach((arr) => {
-          arr.forEach((dp) => {
-            dp.count = asgnmntOb[asngmntKey].dataPoints[`${dp.criterionId}-${dp.ratingDescription}`];
-            dp.value = Math.round(((dp.count / ob.totalAssessments) * 100));
-          });
-          arr.sort((a, b) => a.maxPoints < b.maxPoints);
-        });
+        reAssignOb(ob);
         break;
       }
     }
@@ -109,5 +109,4 @@ export const squashRubricData = (data) => {
   });
 
   return returnValue;
-  
 };
