@@ -130,6 +130,19 @@ const CompareAssignmentsTab = () => {
     ''
   );
 
+  const body = loaded ? (
+    <Flex>
+      <Flex.Item align="start" size="25%">{sectionsCheckList}</Flex.Item>
+      <Flex.Item>{card}</Flex.Item>
+    </Flex>
+  ) : (
+    <Flex justifyItems="center">
+      <Flex.Item>
+        <Spinner renderTitle="Loading" size="medium" margin="0 0 0 medium" />
+      </Flex.Item>
+    </Flex>
+  );
+
   return (
     <div>
       <Flex margin="medium 0 medium">
@@ -155,10 +168,9 @@ const CompareAssignmentsTab = () => {
       <Flex direction="row-reverse" margin="medium 0 medium">
         <Flex.Item>{csvLink}</Flex.Item>
       </Flex>
-      <Flex>
-        <Flex.Item align="start" size="25%">{sectionsCheckList}</Flex.Item>
-        <Flex.Item>{card}</Flex.Item>
-      </Flex>
+      
+      {body}
+      
     </div>
   );
 };
