@@ -22,6 +22,7 @@
     "react": "^16.14.0",
     "react-csv": "^2.0.3",
     "react-dom": "^16.14.0",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "uuid": "^7.0.3"
   },
   "devDependencies": {
