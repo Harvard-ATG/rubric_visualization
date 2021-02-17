@@ -1,10 +1,8 @@
 import { flatData, pivotHeatMapData, squashRubricData } from './utils';
 
-import { testBusinessData } from '../test/test-payload';
+import { testBusinessData, testHeatMapDataMultipleSections } from '../test/test-payload';
 
 const heatMapData = pivotHeatMapData(testBusinessData);
-const clonedData = JSON.parse(JSON.stringify(heatMapData));
-const squashedHeatMapData = squashRubricData(clonedData);
 
 describe('utility functions', () => {
   it('returns true when criterion can be flattened', () => {
@@ -20,7 +18,15 @@ describe('utility functions', () => {
   });
 
   it('removes sections with squashRubricData', () => {
+    expect(testHeatMapDataMultipleSections.length).toEqual(6);
+    expect(testHeatMapDataMultipleSections[0]).toHaveProperty('sectionId');
+    const clonedData = JSON.parse(JSON.stringify(testHeatMapDataMultipleSections));
+    const squashedHeatMapData = squashRubricData(clonedData);
+    // filter for a specific piece of data that we know how it should be aggregated
+    const squashedObject = squashedHeatMapData.filter((obj) => obj.assignmentId === 222064);
     expect(squashedHeatMapData.length).toEqual(3);
-    expect(squashedHeatMapData[0].sectionId).toEqual(undefined);
+    expect(squashedObject[0].sectionId).toEqual(undefined);
+    expect(squashedObject[0].totalAssessments).toEqual(20);
+    expect(squashedObject[0].dataPoints[0][0].count).toEqual(14);
   });
 });

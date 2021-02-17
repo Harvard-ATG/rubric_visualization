@@ -34,53 +34,43 @@ export const initialState = {
 
 // Helper to refactor the process of updating a selector's set of choices
 const updateSelectorValues = (key, value, state) => {
-  const returnState = { ...state };
-  returnState.controls.selectors[key].values = value;
-  return returnState;
+  state.controls.selectors[key].values = value;
+  return state;
 };
 
 // Helper to refactor the process of updating a selector's selection
 const updateSelectorSelection = (key, value, state) => {
-  const returnState = { ...state };
-  returnState.controls.selectors[key].selected = value;
-  return returnState;
+  state.controls.selectors[key].selected = value;
+  return state;
 };
 
 // Helper to refactor the process of updating a selector's set of choices
 const updateCheckListValues = (key, value, state) => {
-  const returnState = { ...state };
-  returnState.controls.checkLists[key].values = value;
-  returnState.controls.checkLists[key].checked = value;
-  return returnState;
+  state.controls.checkLists[key].values = value;
+  state.controls.checkLists[key].checked = value;
+  return state;
 };
 
 // Helper to refactor the process of updating a checklist select-all
 const updateCheckListSelectionAll = (key, state) => {
-  const returnState = { ...state };
-  const list = returnState.controls.checkLists[key];
-  if (
-    (list.checked.length > 0 && list.checked.length < list.values.length)
-    || list.checked.length === list.values.length
-  ) {
-    // clear all
-    returnState.controls.checkLists[key].checked = [];
-    return returnState;
+  const list = state.controls.checkLists[key];
+  if (list.checked.length > 0) {
+    state.controls.checkLists[key].checked = [];
+  } else {
+    state.controls.checkLists[key].checked = [...state.controls.checkLists[key].values];
   }
-  // check all
-  returnState.controls.checkLists[key].checked = [...returnState.controls.checkLists[key].values];
-  return returnState;
+  return state;
 };
 
 // Helper to refactor the process of updating a checklist single selection
 const updateCheckListSelection = (key, value, state) => {
-  const returnState = { ...state };
-  if (returnState.controls.checkLists[key].checked.indexOf(value) !== -1) {
-    returnState.controls.checkLists[key].checked = returnState.controls.checkLists[key].checked
+  if (state.controls.checkLists[key].checked.indexOf(value) !== -1) {
+    state.controls.checkLists[key].checked = state.controls.checkLists[key].checked
       .filter((v) => v !== value);
   } else {
-    returnState.controls.checkLists[key].checked.push(value);
+    state.controls.checkLists[key].checked.push(value);
   }
-  return returnState;
+  return state;
 };
 
 export const reducer = (state, action) => {
@@ -144,15 +134,15 @@ export const reducer = (state, action) => {
         },
       };
     case eventTypes.selectorValuesUpdated:
-      return updateSelectorValues(action.selectorKey, action.value, state);
+      return updateSelectorValues(action.selectorKey, action.value, { ...state });
     case eventTypes.selectorSelected:
-      return updateSelectorSelection(action.selectorKey, action.value, state);
+      return updateSelectorSelection(action.selectorKey, action.value, { ...state });
     case eventTypes.checkListValuesUpdated:
-      return updateCheckListValues(action.checkListKey, action.value, state);
+      return updateCheckListValues(action.checkListKey, action.value, { ...state });
     case eventTypes.checkListCheckedAll:
-      return updateCheckListSelectionAll(action.checkListKey, state);
+      return updateCheckListSelectionAll(action.checkListKey, { ...state });
     case eventTypes.checkBoxChecked:
-      return updateCheckListSelection(action.checkListKey, action.value, state);
+      return updateCheckListSelection(action.checkListKey, action.value, { ...state });
     default:
       return state;
   }
