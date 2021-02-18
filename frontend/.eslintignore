@@ -1,2 +1,4 @@
-/static/frontend/main.js
+/static/frontend/index.bundle.js
+/static/frontend/vendors~index.bundle.js
 /src/index.js
+/src/test/setUpJest.js

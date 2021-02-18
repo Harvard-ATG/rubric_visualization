@@ -6,10 +6,6 @@ import { testBusinessData } from '../test/test-payload';
 import App from './App';
 
 describe('My Test Suite', () => {
-  it('Just passes', () => {
-    expect(true).toEqual(true);
-  });
-
   it('Tests with axe-core', async (done) => {
     global.django = { course_id: 12345 };
     jest.setTimeout(10000);

@@ -2,5 +2,6 @@
   "testRegex": "((\\.|/*.)(spec))\\.js?$",
   "moduleNameMapper": {
       "\\.(css|)$": "identity-obj-proxy"
-  }
+  },
+  "setupFilesAfterEnv": ["<rootDir>/src/test/setUpJest.js"]
 }

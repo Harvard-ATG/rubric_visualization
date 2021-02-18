@@ -1,6 +1,3 @@
-// for eslint purposes, keep more than one function in this file
-// export const emptyUtil = () => {};
-
 /**
  * Test if the datapoints to be charted can be flattened.
  * @param {array} data The datapoints to iterate over for visualization.
@@ -14,52 +11,12 @@ export const flatData = (data) => {
 export const pivotHeatMapData = (payload) => {
   // this transformation takes into account that not all criteria have the same rating set
 
-  const allRubrics = payload.assignments.map((assignment) => {
-    const rubric = {
-      assignmentId: assignment.id,
-      name: assignment.name,
-      dueDate: assignment.due_at,
-      totalAssessments: payload.submissions.reduce((acc, curr) => {
-        if (assignment.id === curr.assignment_id) {
-          return acc + curr.submissions.length;
-        }
-        return acc;
-      }, 0),
-      dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
-        const dataPoint = {
-          criterionId: criterion.id,
-          criterion: criterion.description,
-          ratingDescription: rating.description,
-          maxPoints: rating.points,
-          count: payload.denormalized_data.reduce((acc, curr) => (
-            acc + Number(curr.criterion_id === criterion.id
-              && curr.rating === rating.description
-              && curr.assignment_id === assignment.id)), 0),
-        };
-        return dataPoint;
-      })),
-    };
-
-    rubric.dataPoints.forEach((criterion) => {
-      criterion.sort((a, b) => a.maxPoints < b.maxPoints);
-      criterion.forEach((rating) => {
-        rating.value = rubric.totalAssessments !== 0
-          ? Math.round(((rating.count / rubric.totalAssessments) * 100))
-          : undefined;
-      });
-    });
-
-    return rubric;
-  });
-  return allRubrics;
-};
-
-export const pivotHeatMapDataWithSections = (payload, sections) => {
-  // this transformation takes into account that not all criteria have the same rating set
-
   // create a student lookup for student_id(key) and section_id(value) for later use
   const studentLookup = payload.denormalized_data.reduce((acc, curr) => (
     Object.assign(acc, { [curr.student_id]: curr.section_id })), {});
+
+  // extract the sections for use
+  const sections = payload.sections.map((s) => s.sis_section_id);
 
   const allRubrics = payload.assignments.map((assignment) => {
     const rubrics = [];
@@ -105,4 +62,70 @@ export const pivotHeatMapDataWithSections = (payload, sections) => {
     return rubrics.flat();
   });
   return allRubrics.flat();
+};
+
+/**
+ * Test if the datapoints to be charted can be flattened.
+ * @param {array} data The rubric data returned by the canvas api.
+ * To see the data, you may run testBusinessData found in test-payload.js through pivotHeatMapData
+ * @returns {array} returns squashed rubric data
+ */
+export const squashRubricData = (data) => {
+  // Transform an array of rubrics that represent data points for a particular
+  // section and assignment such that the rubric represents data points for a
+  // particular assignment.
+  // In other words, group the rubrics by assignment and aggregate the section statistics.
+
+  // first create an object of assignments, with assignmentId as the key
+  // aggregate the totalAssessments, and counts of all sections
+  const asgnmntOb = {};
+  data.forEach((a) => {
+    if (!(a.assignmentId in asgnmntOb)) {
+      asgnmntOb[a.assignmentId] = {
+        totalAssessments: a.totalAssessments,
+        dataPoints: a.dataPoints.reduce((acc, curr) => Object.assign(acc, ...curr.map((dp) => ({ [`${dp.criterionId}-${dp.ratingDescription}`]: dp.count }))), {}),
+      };
+    } else {
+      asgnmntOb[a.assignmentId].totalAssessments += a.totalAssessments;
+      a.dataPoints.forEach((arr) => {
+        arr.forEach((dp) => {
+          asgnmntOb[a.assignmentId].dataPoints[`${dp.criterionId}-${dp.ratingDescription}`] += dp.count;
+        });
+      });
+    }
+  });
+
+  // Using the keys from the above asgnmntOb object, run a map to create the array to return
+  // since we are using the above object, each assignment will only have one entry
+  const returnValue = Object.keys(asgnmntOb).map((asngmntKey) => {
+    let ob;
+
+    const reAssignOb = (val) => {
+      // function to reassign the dataPoints using aggreation from above
+      val.dataPoints.forEach((arr) => {
+        arr.forEach((dp) => {
+          dp.count = asgnmntOb[asngmntKey].dataPoints[`${dp.criterionId}-${dp.ratingDescription}`];
+          dp.value = Math.round(((dp.count / ob.totalAssessments) * 100));
+        });
+        arr.sort((a, b) => a.maxPoints < b.maxPoints);
+      });
+    };
+
+    for (let i = 0; i < data.length; i += 1) {
+      if (data[i].assignmentId.toString() === asngmntKey) {
+        // first, copy the original data
+        ob = data[i];
+        // delete reference to the sectionId
+        delete ob.sectionId;
+        // update the totalAssessments from aggregation
+        ob.totalAssessments = asgnmntOb[asngmntKey].totalAssessments;
+        // update the dataPoints
+        reAssignOb(ob);
+        break;
+      }
+    }
+    return ob;
+  });
+
+  return returnValue;
 };
