@@ -11,31 +11,26 @@ export const flatData = (data) => {
 export const pivotHeatMapData = (payload) => {
   // this transformation takes into account that not all criteria have the same rating set
 
-  // create a student lookup for student_id(key) and section_id(value) for later use
-  const studentLookup = payload.denormalized_data.reduce((acc, curr) => (
-    Object.assign(acc, { [curr.student_id]: curr.section_id })), {});
-
-  let student_sections = {};
+  const studentSections = {};
   payload.denormalized_data.forEach((item) => {
-    if(student_sections.hasOwnProperty(item.student_id)) {
-      if(student_sections[item.student_id].indexOf(item.section_id) < 0) {
-        student_sections[item.student_id].push(item.section_id);
+    if (Object.prototype.hasOwnProperty.call(studentSections, item.student_id)) {
+      if (studentSections[item.student_id].indexOf(item.section_id) < 0) {
+        studentSections[item.student_id].push(item.section_id);
       }
     } else {
-      student_sections[ [item.student_id] ] = [item.section_id];
+      studentSections[[item.student_id]] = [item.section_id];
     }
   });
 
   // extract the sections for use
-  const sections = payload.sections.map((s) => {
-    return [
-      s.sis_section_id,
-      s.name.split(' ').pop()
-    ]
-  });
+  const sections = payload.sections.map((s) => [
+    s.sis_section_id,
+    s.name.split(' ').pop(),
+  ]);
 
   const allRubrics = payload.assignments.map((assignment) => {
     const rubrics = [];
+    /* eslint-disable no-param-reassign */
     sections.forEach((sectionArray) => {
       const rubric = {
         assignmentId: assignment.id,
@@ -45,14 +40,14 @@ export const pivotHeatMapData = (payload) => {
         sectionName: sectionArray[1],
         totalAssessments: payload.submissions.map((sub) => sub.submissions)
           .flat()
-          .reduce((acc, curr) => {
-            if(assignment.id === curr.assignment_id && student_sections[curr.user_id]) {
-              if(student_sections[curr.user_id].indexOf(sectionArray[0]) > -1) {
+          .reduce((acc, curr) => /* eslint-disable no-param-reassign */ {
+            if (assignment.id === curr.assignment_id && studentSections[curr.user_id]) {
+              if (studentSections[curr.user_id].indexOf(sectionArray[0]) > -1) {
                 acc += 1;
               }
             }
             return acc;
-          }, 0),
+          }, 0), /* eslint-enable no-param-reassign */
         dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
           const dataPoint = {
             criterionId: criterion.id,
@@ -64,7 +59,7 @@ export const pivotHeatMapData = (payload) => {
                 && curr.rating === rating.description
                 && curr.section_id === sectionArray[0])), 0),
           };
-          
+
           return dataPoint;
         })),
       };
@@ -77,7 +72,7 @@ export const pivotHeatMapData = (payload) => {
             : undefined;
         });
       });
-      if(rubric.totalAssessments !== 0) {
+      if (rubric.totalAssessments !== 0) {
         rubrics.push(rubric);
       }
     });
@@ -152,9 +147,8 @@ export const squashRubricData = (data) => {
   return returnValue;
 };
 
-
 export const truncateString = (str, len) => {
-  if(str.length > len) {
+  if (str.length > len) {
     return `${str.substring(0, len - 3)}...`;
   }
   return str;

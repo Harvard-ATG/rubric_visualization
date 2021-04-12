@@ -45,6 +45,7 @@ const AssignmentCard = (props) => {
 
 AssignmentCard.defaultProps = {
   sectionId: null,
+  sectionName: null,
 };
 
 AssignmentCard.propTypes = {

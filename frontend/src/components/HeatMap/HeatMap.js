@@ -97,7 +97,6 @@ export const drawFlatHeatMap = (id, data) => {
     .attr('width', x.bandwidth() - 20)
     .attr('height', y.bandwidth() - 20)
     .style('fill', (d) => myColor(d.value));
-
 };
 
 /**
@@ -182,7 +181,5 @@ export const drawHeatMap = (id, data) => {
       .attr('width', x.bandwidth() - 20)
       .attr('height', y.bandwidth() - 20)
       .style('fill', (d) => myColor(d.value));
-
   });
-
 };
