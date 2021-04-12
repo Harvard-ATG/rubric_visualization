@@ -1,7 +1,10 @@
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const path = require('path');
+const BrotliPlugin = require('brotli-webpack-plugin');
+  
 
 module.exports = {
+  devtool: '',
   entry: {
     index: './src/index.js',
   },
@@ -36,6 +39,14 @@ module.exports = {
       },
     ],
   },
+  plugins: [
+    new BrotliPlugin({
+      asset: '[path].br[query]',
+      test: /\.(js|css|html|svg)$/,
+      threshold: 10240,
+      minRatio: 0.8
+    }),
+  ],
   optimization: {
     minimizer: [new UglifyJsPlugin()],
     splitChunks: {

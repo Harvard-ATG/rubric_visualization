@@ -131,8 +131,8 @@ def get_sections_list(request_context, course_id):
         course_id,
         'students'
     )
-    sections = filter(lambda x: x['students'] is not None, results)
-    return list(sections)
+    returned_sections = filter(lambda x: x['students'] is not None, results)
+    return list(returned_sections)
 
 def get_students_list(request_context, course_id):
     '''
@@ -164,8 +164,8 @@ def get_assignments_list(request_context, course_id):
         course_id,
         ''
         )
-    assignments = list(filter(lambda x: 'rubric' in x, results))
-    return [{k: assignment[k] for k in keys} for assignment in assignments]
+    returned_assignments = list(filter(lambda x: 'rubric' in x, results))
+    return [{k: assignment[k] for k in keys} for assignment in returned_assignments]
     
 
 def get_submissions_with_rubric_assessments(request_context, course_id, assignment_ids):
