@@ -34,7 +34,8 @@ export const initialState = {
 
 // Helper to refactor the process of updating a selector's set of choices
 const updateSelectorValues = (key, value, state) => {
-  state.controls.selectors[key].values = value;
+  // selector choices should always be unique
+  state.controls.selectors[key].values = [...new Set(value)];
   return state;
 };
 

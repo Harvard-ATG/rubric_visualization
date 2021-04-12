@@ -15,23 +15,44 @@ export const pivotHeatMapData = (payload) => {
   const studentLookup = payload.denormalized_data.reduce((acc, curr) => (
     Object.assign(acc, { [curr.student_id]: curr.section_id })), {});
 
+  let student_sections = {};
+  payload.denormalized_data.forEach((item) => {
+    if(student_sections.hasOwnProperty(item.student_id)) {
+      if(student_sections[item.student_id].indexOf(item.section_id) < 0) {
+        student_sections[item.student_id].push(item.section_id);
+      }
+    } else {
+      student_sections[ [item.student_id] ] = [item.section_id];
+    }
+  });
+
   // extract the sections for use
-  const sections = payload.sections.map((s) => s.sis_section_id);
+  const sections = payload.sections.map((s) => {
+    return [
+      s.sis_section_id,
+      s.name.split(' ').pop()
+    ]
+  });
 
   const allRubrics = payload.assignments.map((assignment) => {
     const rubrics = [];
-    sections.forEach((section) => {
+    sections.forEach((sectionArray) => {
       const rubric = {
         assignmentId: assignment.id,
         name: assignment.name,
         dueDate: assignment.due_at,
-        sectionId: section,
+        sectionId: sectionArray[0],
+        sectionName: sectionArray[1],
         totalAssessments: payload.submissions.map((sub) => sub.submissions)
           .flat()
-          .reduce((acc, curr) => (
-            acc + Number(assignment.id === curr.assignment_id
-              && studentLookup[curr.user_id] === section)
-          ), 0),
+          .reduce((acc, curr) => {
+            if(assignment.id === curr.assignment_id && student_sections[curr.user_id]) {
+              if(student_sections[curr.user_id].indexOf(sectionArray[0]) > -1) {
+                acc += 1;
+              }
+            }
+            return acc;
+          }, 0),
         dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
           const dataPoint = {
             criterionId: criterion.id,
@@ -39,11 +60,11 @@ export const pivotHeatMapData = (payload) => {
             ratingDescription: rating.description,
             maxPoints: rating.points,
             count: payload.denormalized_data.reduce((acc, curr) => (
-              acc + Number(curr.criterion_id === criterion.id
+              acc + Number(curr.criterion_id === `${assignment.id}${criterion.id}`
                 && curr.rating === rating.description
-                && curr.assignment_id === assignment.id
-                && curr.section_id === section)), 0),
+                && curr.section_id === sectionArray[0])), 0),
           };
+          
           return dataPoint;
         })),
       };
@@ -56,8 +77,9 @@ export const pivotHeatMapData = (payload) => {
             : undefined;
         });
       });
-
-      rubrics.push(rubric);
+      if(rubric.totalAssessments !== 0) {
+        rubrics.push(rubric);
+      }
     });
     return rubrics.flat();
   });
@@ -128,4 +150,12 @@ export const squashRubricData = (data) => {
   });
 
   return returnValue;
+};
+
+
+export const truncateString = (str, len) => {
+  if(str.length > len) {
+    return `${str.substring(0, len - 3)}...`;
+  }
+  return str;
 };

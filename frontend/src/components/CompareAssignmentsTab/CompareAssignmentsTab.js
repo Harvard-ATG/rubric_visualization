@@ -70,7 +70,7 @@ const CompareAssignmentsTab = () => {
       dispatch({
         type: checkListValuesUpdated,
         checkListKey: 'sections',
-        value: [...state.businessData.sections.map((s) => s.sis_section_id)],
+        value: [...state.businessData.sections.map((s) => s.name.split(' ').pop())],
       });
     }
   });
@@ -89,7 +89,7 @@ const CompareAssignmentsTab = () => {
   if (state.controls.selectors.showSections.selected === 'By Sections') {
     filteredSectionSet = filterSection.length === state.controls.checkLists.sections.values.length
       ? filteredAssignmentSet
-      : filteredAssignmentSet.filter((rubric) => filterSection.indexOf(rubric.sectionId) !== -1);
+      : filteredAssignmentSet.filter((rubric) => filterSection.indexOf(rubric.sectionName) !== -1);
   }
 
   const loaded = !state.processing.loadingBusinessData
@@ -103,6 +103,7 @@ const CompareAssignmentsTab = () => {
         dataPoints={rubric.dataPoints}
         assignmentId={rubric.assignmentId}
         sectionId={rubric.sectionId}
+        sectionName={rubric.sectionName}
       />
     ))
   ) : (

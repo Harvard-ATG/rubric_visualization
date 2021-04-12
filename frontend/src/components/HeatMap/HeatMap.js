@@ -78,6 +78,7 @@ export const drawFlatHeatMap = (id, data) => {
     .range([height, 0])
     .domain(myVars)
     .padding(0.01);
+
   svg.append('g')
     .call(d3.axisLeft(y));
 
@@ -96,6 +97,7 @@ export const drawFlatHeatMap = (id, data) => {
     .attr('width', x.bandwidth() - 20)
     .attr('height', y.bandwidth() - 20)
     .style('fill', (d) => myColor(d.value));
+
 };
 
 /**
@@ -149,7 +151,6 @@ export const drawHeatMap = (id, data) => {
       .padding(0.01);
 
     svg.append('g')
-      .style('font-size', '1rem')
       .attr('transform', `translate(0,${y.bandwidth() * (index) + ((index * 3) * criteriaLength)})`)
       .call(d3.axisLeft(y).tickSize(0))
       .call((g) => g.select('.domain').remove());
@@ -161,7 +162,6 @@ export const drawHeatMap = (id, data) => {
       .padding(0.01);
 
     svg.append('g')
-      .style('font-size', '1rem')
       .attr('transform', `translate(0,${y.bandwidth() * (index) + ((index * 3) * criteriaLength) + 10})`)
       .call(d3.axisTop(x).tickSize(0))
       .call((g) => g.select('.domain').remove());
@@ -182,5 +182,7 @@ export const drawHeatMap = (id, data) => {
       .attr('width', x.bandwidth() - 20)
       .attr('height', y.bandwidth() - 20)
       .style('fill', (d) => myColor(d.value));
+
   });
+
 };
