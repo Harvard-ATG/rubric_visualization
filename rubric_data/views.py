@@ -29,7 +29,6 @@ def course_data(request, course_id):
             assignment_ids
             )
         sections_list = get_sections_list(request_context, course_id)
-        
     except CanvasAPIError as e:
         msg = f"Canvas API error {e.status_code}"
         logger.exception(msg)
@@ -41,11 +40,10 @@ def course_data(request, course_id):
         'students': students,
         'sections': sections_list
     }
-    denormalized_data = denormalize(payload)
-    payload['denormalized_data'] = denormalized_data
+    payload['denormalized_data'] = denormalize(payload)
     
     return JsonResponse(payload)
-    
+
     
 def denormalize(data):
     """Denormalize the data provided by get_students_list, get_assignments_list, 
@@ -63,15 +61,22 @@ def denormalize(data):
         return []
     
     assignments_lookup = { assignment['id'] : assignment for assignment in data['assignments']}
-    criteria_lookup = { criterion['id'] : criterion 
+    # criterion IDs are NOT unique. Cat them with assignment IDs to create a unique key
+    criteria_lookup = { f"{assignment['id']}{criterion['id']}" : criterion
         for assignment in data['assignments'] 
         for criterion in assignment['rubric'] 
     }
     students_lookup = { student['id'] : student for student in data['students']}
-    sections_lookup = { student['id']: section['sis_section_id'] 
-        for section in data['sections']
-        for student in section['students']
-    }
+    sections_lookup = {}
+    for section in data['sections']:
+        # split out the relevant part of the name with rpartition
+        _, _, section_name = section["name"].rpartition(" ")
+        section_tuple = (section['sis_section_id'], section_name)
+        for student in section['students']:
+            if student['id'] not in sections_lookup.keys():
+                sections_lookup[student['id']] = [section_tuple]
+            else:
+                sections_lookup[student['id']].append(section_tuple)
         
     output = []
 
@@ -82,28 +87,32 @@ def denormalize(data):
     
         # iterate through submissions under assignments
         for submission in assignment['submissions']:
-            if 'rubric_assessment' in submission.keys() and submission['workflow_state'] == 'graded':
+            if 'rubric_assessment' in submission.keys() and submission['workflow_state'] == 'graded' and submission['score'] is not None:
                 submission_id = submission['id']
                 student_id = submission['user_id']
                 student_name = students_lookup[student_id]['sortable_name']
-                section_id = sections_lookup[student_id]
+                section_tuples = sections_lookup[student_id]
 
                 # iterate through criteria and ratings under submissions
                 for criterion_id, criterion_data in submission['rubric_assessment'].items():
-                    score = criterion_data['points']
-                    criterion_name = criteria_lookup[criterion_id]['description']
-                    row = {
-                        "student_id": student_id,
-                        "student_name": student_name,
-                        "assignment_id": assignment_id,
-                        "assignment_name": assignment_name,
-                        "criterion_id": criterion_id,
-                        "criterion_name": criterion_name,
-                        "section_id": section_id,
-                        "score": score,
-                        "rating": get_rating(criterion_id, score, criteria_lookup)
-                    }
-                    output.append(row)
+                    if 'points' in criterion_data.keys() and criterion_data['rating_id'] is not None:
+                        score = criterion_data['points']
+                        unique_criterion_id = f"{assignment_id}{criterion_id}"
+                        criterion_name = criteria_lookup[unique_criterion_id]['description']
+                        for section_tuple in section_tuples:
+                            row = {
+                                "student_id": student_id,
+                                "student_name": student_name,
+                                "assignment_id": assignment_id,
+                                "assignment_name": assignment_name,
+                                "criterion_id": unique_criterion_id,
+                                "criterion_name": criterion_name,
+                                "section_id": section_tuple[0],
+                                "section_name": section_tuple[1],
+                                "score": score,
+                                "rating": get_rating(unique_criterion_id, score, criteria_lookup)
+                            }
+                            output.append(row)
     return output
 
 
@@ -122,7 +131,8 @@ def get_sections_list(request_context, course_id):
         course_id,
         'students'
     )
-    return results
+    sections = filter(lambda x: x['students'] is not None, results)
+    return list(sections)
 
 def get_students_list(request_context, course_id):
     '''
@@ -154,8 +164,8 @@ def get_assignments_list(request_context, course_id):
         course_id,
         ''
         )
-    my_assignments = list(filter(lambda x: 'rubric' in x, results))
-    return [{k: assignment[k] for k in keys} for assignment in my_assignments]
+    assignments = list(filter(lambda x: 'rubric' in x, results))
+    return [{k: assignment[k] for k in keys} for assignment in assignments]
     
 
 def get_submissions_with_rubric_assessments(request_context, course_id, assignment_ids):
