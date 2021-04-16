@@ -12,8 +12,8 @@ class ViewTests(TestCase):
             data = json.loads(json_file.read())
             denormalized_data = denormalize(data)
             self.assertIs(type(denormalized_data), list)
-            self.assertEqual(len(denormalized_data), 45)
-            self.assertEqual(len(denormalized_data[0]), 10)
+            self.assertEqual(len(denormalized_data), 1612)
+            self.assertEqual(len(denormalized_data[0]), 11)
             
     def test_denormalize_none(self):
         denormalized_data = denormalize(None)
