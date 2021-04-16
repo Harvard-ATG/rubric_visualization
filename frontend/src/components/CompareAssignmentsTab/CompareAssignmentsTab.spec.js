@@ -18,7 +18,7 @@ describe('<CompareAssignmentsTab />', () => {
     expect(component.find(AssignmentCard).length).toEqual(0);
   });
 
-  it('component mounts with three vis cards', async () => {
+  it('component mounts with 22 vis cards', async () => {
     const sections = testBusinessData.sections.map((s) => s.sis_section_id);
     const newState = {
       ...initialState,
@@ -38,6 +38,6 @@ describe('<CompareAssignmentsTab />', () => {
         <CompareAssignmentsTab />
       </AppContext.Provider>,
     );
-    expect(component.find(AssignmentCard).length).toEqual(3);
+    expect(component.find(AssignmentCard).length).toEqual(22);
   });
 });

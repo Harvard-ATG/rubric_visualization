@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.test import TestCase
-from .views import denormalize, get_rating
+from .views import denormalize, get_rating_info
 
 import json
 
@@ -55,8 +55,8 @@ class ViewTests(TestCase):
             }
         }
 
-        rating1 = get_rating('_396', 6, criteria_dict)
-        rating2 = get_rating('_5661', 0, criteria_dict)
-        self.assertEqual(rating1, "Full Marks")
-        self.assertEqual(rating2, "No Marks")
+        rating1 = get_rating_info('_396', 6, criteria_dict)
+        rating2 = get_rating_info('_5661', 0, criteria_dict)
+        self.assertEqual(rating1, ("Full Marks", 8))
+        self.assertEqual(rating2, ("No Marks", 0))
         

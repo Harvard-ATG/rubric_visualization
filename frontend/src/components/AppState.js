@@ -10,6 +10,7 @@ export const initialState = {
   },
   visualizationData: {
     heatMapData: [],
+    heatMapDataNoSections: [],
   },
   processing: {
     loadingBusinessData: true,
@@ -117,6 +118,19 @@ export const reducer = (state, action) => {
         visualizationData: {
           ...state.visualizationData,
           heatMapData: action.value,
+        },
+        processing: {
+          ...state.processing,
+          pivotingHeatMap: false,
+          pivotedHeatMap: true,
+        },
+      };
+    case eventTypes.heatMapDataNoSectionsPivoted:
+      return {
+        ...state,
+        visualizationData: {
+          ...state.visualizationData,
+          heatMapDataNoSections: action.value,
         },
         processing: {
           ...state.processing,

@@ -7,11 +7,12 @@ import Selector from '../Selector/Selector';
 import CheckList from '../CheckBox/CheckList';
 
 import { AppContext } from '../AppState';
-import { pivotHeatMapData, squashRubricData } from '../utils';
+import { pivotHeatMapData, pivotHeatMapDataNoSections } from '../utils';
 
 import {
   heatMapDataPivoting,
   heatMapDataPivoted,
+  heatMapDataNoSectionsPivoted,
   selectorValuesUpdated,
   checkListValuesUpdated,
 } from '../eventTypes';
@@ -19,8 +20,7 @@ import {
 const switchVizData = (selection, data) => {
   switch (selection) {
     case 'Aggregated': {
-      const clonedData = JSON.parse(JSON.stringify(data.heatMapData));
-      return squashRubricData(clonedData);
+      return data.heatMapDataNoSections;
     }
     case 'By Sections':
       return data.heatMapData;
@@ -71,6 +71,18 @@ const CompareAssignmentsTab = () => {
         type: checkListValuesUpdated,
         checkListKey: 'sections',
         value: [...state.businessData.sections.map((s) => s.name.split(' ').pop())],
+      });
+    }
+
+    if (
+      state.controls.selectors.showSections.selected === 'Aggregated'
+      && state.visualizationData.heatMapDataNoSections.length === 0
+    ) {
+      dispatch({ type: heatMapDataPivoting });
+      const vizDataNoSections = pivotHeatMapDataNoSections(state.businessData);
+      dispatch({
+        type: heatMapDataNoSectionsPivoted,
+        value: vizDataNoSections,
       });
     }
   });

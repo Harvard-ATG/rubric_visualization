@@ -8,46 +8,114 @@ export const flatData = (data) => {
   return ratingSets.every((curr) => curr.toString() === ratingSets[0].toString());
 };
 
-export const pivotHeatMapData = (payload) => {
-  // this transformation takes into account that not all criteria have the same rating set
+/**
+ * Return a map of objects with sectionId and formatted sectionName
+ * @param {array} sections
+ * @returns array of objects
+ */
+export const sectionIdNameMap = (sections) => sections.map((s) => ({
+  sectionId: s.sis_section_id,
+  sectionName: s.name.split(' ').pop(),
+}));
 
-  const studentSections = {};
-  payload.denormalized_data.forEach((item) => {
-    if (Object.prototype.hasOwnProperty.call(studentSections, item.student_id)) {
-      if (studentSections[item.student_id].indexOf(item.section_id) < 0) {
-        studentSections[item.student_id].push(item.section_id);
-      }
-    } else {
-      studentSections[[item.student_id]] = [item.section_id];
-    }
+/**
+ * filter test to filter for unique student_id and criterion_id combinations
+ * @param {object} curr - the current object
+ * @param {int} index - the current index in the original array
+ * @param {array} arr - the original array
+ * @returns boolean
+ */
+const uniqueStudentCriteria = (curr, index, arr) => {
+  const firstIndex = arr.findIndex((item) => (
+    item.student_id === curr.student_id
+      && item.criterion_id === curr.criterion_id
+  ));
+  return firstIndex === index;
+};
+
+// add function to calculate "value" for refactoring
+/**
+ * Mutates the 'dataPoints' array to sort criterion and calculate the 'value' attribute
+ * @param {array} dataPoints - array of array of criterion objects
+ * @param {int} totalAssessments - total number of assessments for the assignment
+ * @returns array
+ */
+const calculateDataPointValues = (dataPoints, totalAssessments) => {
+  if (totalAssessments && totalAssessments !== 0) {
+    const returnData = dataPoints.map((criterion) => {
+      criterion.sort((a, b) => a.maxPoints < b.maxPoints);
+      criterion.forEach((rating) => {
+        rating.value = Math.round(((rating.count / totalAssessments) * 100));
+      });
+      return criterion;
+    });
+    return returnData;
+  }
+  return null;
+};
+
+/* eslint-disable no-param-reassign */
+const sumTotalAssessments = (rubric) => (
+  rubric.dataPoints[0].reduce((acc, curr) => {
+    acc += curr.count;
+    return acc;
+  }, 0)
+);
+/* eslint-enable no-param-reassign */
+
+/**
+ * Takes the payload, filters the denormalized data to make sure students do not
+ * appear in more than one section. Returns an array of rubric data based on assignment.
+ * @param {array} payload all the data that is provided to state.payload
+ * @returns array
+ */
+export const pivotHeatMapDataNoSections = (payload) => {
+  // filter denormalized data so students dont appear in more than one section
+  const filteredDenormalizedData = payload.denormalized_data.filter(uniqueStudentCriteria);
+
+  const allRubrics = payload.assignments.map((assignment) => {
+    const rubric = {
+      assignmentId: assignment.id,
+      name: assignment.name,
+      totalAssessments: 0,
+      dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
+        const dataPoint = {
+          criterionId: criterion.id,
+          criterion: criterion.description,
+          ratingDescription: rating.description,
+          maxPoints: rating.points,
+          count: filteredDenormalizedData.reduce((acc, curr) => (
+            acc + Number(curr.criterion_id === `${assignment.id}${criterion.id}`
+              && curr.rating === rating.description)), 0),
+        };
+        return dataPoint;
+      })),
+    };
+    rubric.totalAssessments = sumTotalAssessments(rubric);
+    rubric.dataPoints = calculateDataPointValues(rubric.dataPoints, rubric.totalAssessments);
+    return rubric;
   });
+  return allRubrics;
+};
 
-  // extract the sections for use
-  const sections = payload.sections.map((s) => [
-    s.sis_section_id,
-    s.name.split(' ').pop(),
-  ]);
+/**
+ * Takes the payload, pivots the data to represent rubrics based on assigment and section.
+ * @param {array} payload all the data that is provided to state.payload
+ * @returns array
+ */
+export const pivotHeatMapData = (payload) => {
+  const sections = sectionIdNameMap(payload.sections);
 
   const allRubrics = payload.assignments.map((assignment) => {
     const rubrics = [];
-    /* eslint-disable no-param-reassign */
-    sections.forEach((sectionArray) => {
+    sections.forEach((sectionObject) => {
       const rubric = {
         assignmentId: assignment.id,
         name: assignment.name,
         dueDate: assignment.due_at,
-        sectionId: sectionArray[0],
-        sectionName: sectionArray[1],
-        totalAssessments: payload.submissions.map((sub) => sub.submissions)
-          .flat()
-          .reduce((acc, curr) => /* eslint-disable no-param-reassign */ {
-            if (assignment.id === curr.assignment_id && studentSections[curr.user_id]) {
-              if (studentSections[curr.user_id].indexOf(sectionArray[0]) > -1) {
-                acc += 1;
-              }
-            }
-            return acc;
-          }, 0), /* eslint-enable no-param-reassign */
+        sectionId: sectionObject.sectionId,
+        sectionName: sectionObject.sectionName,
+        totalAssessments: 0,
         dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
           const dataPoint = {
             criterionId: criterion.id,
@@ -57,21 +125,13 @@ export const pivotHeatMapData = (payload) => {
             count: payload.denormalized_data.reduce((acc, curr) => (
               acc + Number(curr.criterion_id === `${assignment.id}${criterion.id}`
                 && curr.rating === rating.description
-                && curr.section_id === sectionArray[0])), 0),
+                && curr.section_id === sectionObject.sectionId)), 0),
           };
-
           return dataPoint;
         })),
       };
-
-      rubric.dataPoints.forEach((criterion) => {
-        criterion.sort((a, b) => a.maxPoints < b.maxPoints);
-        criterion.forEach((rating) => {
-          rating.value = rubric.totalAssessments !== 0
-            ? Math.round(((rating.count / rubric.totalAssessments) * 100))
-            : undefined;
-        });
-      });
+      rubric.totalAssessments = sumTotalAssessments(rubric);
+      rubric.dataPoints = calculateDataPointValues(rubric.dataPoints, rubric.totalAssessments);
       if (rubric.totalAssessments !== 0) {
         rubrics.push(rubric);
       }
@@ -82,71 +142,12 @@ export const pivotHeatMapData = (payload) => {
 };
 
 /**
- * Test if the datapoints to be charted can be flattened.
- * @param {array} data The rubric data returned by the canvas api.
- * To see the data, you may run testBusinessData found in test-payload.js through pivotHeatMapData
- * @returns {array} returns squashed rubric data
+ * Takes a string, and returns a truncated version if it is longer
+ * than the specified length
+ * @param {string} str string to test and truncate
+ * @param {int} len max length of the string
+ * @returns string
  */
-export const squashRubricData = (data) => {
-  // Transform an array of rubrics that represent data points for a particular
-  // section and assignment such that the rubric represents data points for a
-  // particular assignment.
-  // In other words, group the rubrics by assignment and aggregate the section statistics.
-
-  // first create an object of assignments, with assignmentId as the key
-  // aggregate the totalAssessments, and counts of all sections
-  const asgnmntOb = {};
-  data.forEach((a) => {
-    if (!(a.assignmentId in asgnmntOb)) {
-      asgnmntOb[a.assignmentId] = {
-        totalAssessments: a.totalAssessments,
-        dataPoints: a.dataPoints.reduce((acc, curr) => Object.assign(acc, ...curr.map((dp) => ({ [`${dp.criterionId}-${dp.ratingDescription}`]: dp.count }))), {}),
-      };
-    } else {
-      asgnmntOb[a.assignmentId].totalAssessments += a.totalAssessments;
-      a.dataPoints.forEach((arr) => {
-        arr.forEach((dp) => {
-          asgnmntOb[a.assignmentId].dataPoints[`${dp.criterionId}-${dp.ratingDescription}`] += dp.count;
-        });
-      });
-    }
-  });
-
-  // Using the keys from the above asgnmntOb object, run a map to create the array to return
-  // since we are using the above object, each assignment will only have one entry
-  const returnValue = Object.keys(asgnmntOb).map((asngmntKey) => {
-    let ob;
-
-    const reAssignOb = (val) => {
-      // function to reassign the dataPoints using aggreation from above
-      val.dataPoints.forEach((arr) => {
-        arr.forEach((dp) => {
-          dp.count = asgnmntOb[asngmntKey].dataPoints[`${dp.criterionId}-${dp.ratingDescription}`];
-          dp.value = Math.round(((dp.count / ob.totalAssessments) * 100));
-        });
-        arr.sort((a, b) => a.maxPoints < b.maxPoints);
-      });
-    };
-
-    for (let i = 0; i < data.length; i += 1) {
-      if (data[i].assignmentId.toString() === asngmntKey) {
-        // first, copy the original data
-        ob = data[i];
-        // delete reference to the sectionId
-        delete ob.sectionId;
-        // update the totalAssessments from aggregation
-        ob.totalAssessments = asgnmntOb[asngmntKey].totalAssessments;
-        // update the dataPoints
-        reAssignOb(ob);
-        break;
-      }
-    }
-    return ob;
-  });
-
-  return returnValue;
-};
-
 export const truncateString = (str, len) => {
   if (str.length > len) {
     return `${str.substring(0, len - 3)}...`;

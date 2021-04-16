@@ -41,7 +41,6 @@ def course_data(request, course_id):
         'sections': sections_list
     }
     payload['denormalized_data'] = denormalize(payload)
-    
     return JsonResponse(payload)
 
     
@@ -99,29 +98,36 @@ def denormalize(data):
                         score = criterion_data['points']
                         unique_criterion_id = f"{assignment_id}{criterion_id}"
                         criterion_name = criteria_lookup[unique_criterion_id]['description']
-                        for section_tuple in section_tuples:
-                            row = {
-                                "student_id": student_id,
-                                "student_name": student_name,
-                                "assignment_id": assignment_id,
-                                "assignment_name": assignment_name,
-                                "criterion_id": unique_criterion_id,
-                                "criterion_name": criterion_name,
-                                "section_id": section_tuple[0],
-                                "section_name": section_tuple[1],
-                                "score": score,
-                                "rating": get_rating(unique_criterion_id, score, criteria_lookup)
-                            }
-                            output.append(row)
+                        rating_tuple = get_rating_info(unique_criterion_id, score, criteria_lookup)
+                        if rating_tuple is not None:
+                            for section_tuple in section_tuples:
+                                row = {
+                                    "student_id": student_id,
+                                    "student_name": student_name,
+                                    "assignment_id": assignment_id,
+                                    "assignment_name": assignment_name,
+                                    "criterion_id": unique_criterion_id,
+                                    "criterion_name": criterion_name,
+                                    "section_id": section_tuple[0],
+                                    "section_name": section_tuple[1],
+                                    "score": score,
+                                    "rating": rating_tuple[0],
+                                    "rating_max_points": rating_tuple[1]
+                                }
+                                output.append(row)
     return output
 
 
-def get_rating(criterion_id, score, criteria_lookup):
+def get_rating_info(criterion_id, score, criteria_lookup):
+    """
+    Add docstring
+    Returns tuple of rating description, and rating "max points"
+    """
     criterion_info = criteria_lookup[criterion_id]
     criterion_info['ratings'].sort(reverse=False, key=lambda x: x['points'])
     for rating in criterion_info['ratings']:
         if score <= rating['points']:
-            return rating['description']
+            return (rating['description'], rating['points'])
     return None
 
 def get_sections_list(request_context, course_id):
