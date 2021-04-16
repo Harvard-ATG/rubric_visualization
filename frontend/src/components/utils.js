@@ -55,6 +55,11 @@ const calculateDataPointValues = (dataPoints, totalAssessments) => {
 };
 
 /* eslint-disable no-param-reassign */
+/**
+ * Returns total assessments for a rubric by summing the counts of one criterion
+ * @param {array} rubric data from a single rubric
+ * @returns int
+ */
 const sumTotalAssessments = (rubric) => (
   rubric.dataPoints[0].reduce((acc, curr) => {
     acc += curr.count;
