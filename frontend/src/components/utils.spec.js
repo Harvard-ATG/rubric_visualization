@@ -4,6 +4,8 @@ import {
   pivotHeatMapDataNoSections,
   sectionIdNameMap,
   truncateString,
+  countDenormalizedDataPoints,
+  uniqueStudentCriteria,
 } from './utils';
 
 import { testBusinessData } from '../test/test-payload';
@@ -11,6 +13,7 @@ import { testBusinessData } from '../test/test-payload';
 const heatMapData = pivotHeatMapData(testBusinessData);
 
 describe('utility functions', () => {
+  
   it('returns true when criterion can be flattened', () => {
     // in this set of datapoints, all rating descriptions are the same
     const rubric = heatMapData[0].dataPoints;
@@ -22,6 +25,14 @@ describe('utility functions', () => {
     const rubric = heatMapData[1].dataPoints;
     rubric[0][0].ratingDescription = 'Not a standard description';
     expect(flatData(rubric)).toEqual(false);
+  });
+
+  it('countDenormalizedDataPoints() counts the denormalized data', () => {
+    const count = countDenormalizedDataPoints(testBusinessData.denormalized_data, true);
+    expect(Object.keys(count).length).toEqual(193);
+    const filteredDenormalizedData = testBusinessData.denormalized_data.filter(uniqueStudentCriteria);
+    const countNoSections = countDenormalizedDataPoints(filteredDenormalizedData, false);
+    expect(Object.keys(countNoSections).length).toEqual(31);
   });
 
   it('aggregates data with pivotHeatMapDataNoSections', () => {

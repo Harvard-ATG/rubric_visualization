@@ -25,7 +25,7 @@ export const sectionIdNameMap = (sections) => sections.map((s) => ({
  * @param {array} arr - the original array
  * @returns boolean
  */
-const uniqueStudentCriteria = (curr, index, arr) => {
+export const uniqueStudentCriteria = (curr, index, arr) => {
   const firstIndex = arr.findIndex((item) => (
     item.student_id === curr.student_id
       && item.criterion_id === curr.criterion_id
@@ -68,6 +68,31 @@ const sumTotalAssessments = (rubric) => (
 );
 /* eslint-enable no-param-reassign */
 
+/* eslint-disable no-param-reassign */
+/**
+ * Takes an array of denormalized datapoints, as well as a bool of whether we should
+ * respect sections, and returns an object of keys with counts
+ * @param {array} data array of dataPoint objects
+ * @param {boolean} withSections should the count respect sections
+ * @returns object
+ */
+export const countDenormalizedDataPoints = (data, withSections) => {
+  return data.reduce((acc, curr) => {
+    const rating = curr.rating.replace(/\s/g, "");
+    const countKey = withSections 
+      ? `${curr.criterion_id}${rating}${curr.section_id}`
+      : `${curr.criterion_id}${rating}`;
+    if(Object.prototype.hasOwnProperty.call(acc, countKey)) {
+      acc[countKey] += 1;
+    } else {
+      acc[countKey] = 1;
+    }
+    return acc;
+  }, {});
+};
+/* eslint-enable no-param-reassign */
+
+
 /**
  * Takes the payload, filters the denormalized data to make sure students do not
  * appear in more than one section. Returns an array of rubric data based on assignment.
@@ -76,7 +101,9 @@ const sumTotalAssessments = (rubric) => (
  */
 export const pivotHeatMapDataNoSections = (payload) => {
   // filter denormalized data so students dont appear in more than one section
+  // TODO : filteredDenormalizedData is O(n^2) and could be optimized perhaps with a hash table?
   const filteredDenormalizedData = payload.denormalized_data.filter(uniqueStudentCriteria);
+  const dataPointCounts = countDenormalizedDataPoints(filteredDenormalizedData, false);
 
   const allRubrics = payload.assignments.map((assignment) => {
     const rubric = {
@@ -84,14 +111,13 @@ export const pivotHeatMapDataNoSections = (payload) => {
       name: assignment.name,
       totalAssessments: 0,
       dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
+        const dataPointCountKey = `${assignment.id}${criterion.id}${rating.description.replace(/\s/g, "")}`;
         const dataPoint = {
           criterionId: criterion.id,
           criterion: criterion.description,
           ratingDescription: rating.description,
           maxPoints: rating.points,
-          count: filteredDenormalizedData.reduce((acc, curr) => (
-            acc + Number(curr.criterion_id === `${assignment.id}${criterion.id}`
-              && curr.rating === rating.description)), 0),
+          count: dataPointCounts[dataPointCountKey] ? dataPointCounts[dataPointCountKey] : 0,
         };
         return dataPoint;
       })),
@@ -110,6 +136,7 @@ export const pivotHeatMapDataNoSections = (payload) => {
  */
 export const pivotHeatMapData = (payload) => {
   const sections = sectionIdNameMap(payload.sections);
+  const dataPointCounts = countDenormalizedDataPoints(payload.denormalized_data, true);
 
   const allRubrics = payload.assignments.map((assignment) => {
     const rubrics = [];
@@ -122,15 +149,13 @@ export const pivotHeatMapData = (payload) => {
         sectionName: sectionObject.sectionName,
         totalAssessments: 0,
         dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
+          const dataPointCountKey = `${assignment.id}${criterion.id}${rating.description.replace(/\s/g, "")}${sectionObject.sectionId}`;
           const dataPoint = {
             criterionId: criterion.id,
             criterion: criterion.description,
             ratingDescription: rating.description,
             maxPoints: rating.points,
-            count: payload.denormalized_data.reduce((acc, curr) => (
-              acc + Number(curr.criterion_id === `${assignment.id}${criterion.id}`
-                && curr.rating === rating.description
-                && curr.section_id === sectionObject.sectionId)), 0),
+            count: dataPointCounts[dataPointCountKey] ? dataPointCounts[dataPointCountKey]: 0,
           };
           return dataPoint;
         })),
