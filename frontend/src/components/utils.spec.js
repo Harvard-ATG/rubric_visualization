@@ -13,7 +13,6 @@ import { testBusinessData } from '../test/test-payload';
 const heatMapData = pivotHeatMapData(testBusinessData);
 
 describe('utility functions', () => {
-  
   it('returns true when criterion can be flattened', () => {
     // in this set of datapoints, all rating descriptions are the same
     const rubric = heatMapData[0].dataPoints;
@@ -30,8 +29,8 @@ describe('utility functions', () => {
   it('countDenormalizedDataPoints() counts the denormalized data', () => {
     const count = countDenormalizedDataPoints(testBusinessData.denormalized_data, true);
     expect(Object.keys(count).length).toEqual(193);
-    const filteredDenormalizedData = testBusinessData.denormalized_data.filter(uniqueStudentCriteria);
-    const countNoSections = countDenormalizedDataPoints(filteredDenormalizedData, false);
+    const filteredDenormData = testBusinessData.denormalized_data.filter(uniqueStudentCriteria);
+    const countNoSections = countDenormalizedDataPoints(filteredDenormData, false);
     expect(Object.keys(countNoSections).length).toEqual(31);
   });
 

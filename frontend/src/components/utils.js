@@ -76,22 +76,19 @@ const sumTotalAssessments = (rubric) => (
  * @param {boolean} withSections should the count respect sections
  * @returns object
  */
-export const countDenormalizedDataPoints = (data, withSections) => {
-  return data.reduce((acc, curr) => {
-    const rating = curr.rating.replace(/\s/g, "");
-    const countKey = withSections 
-      ? `${curr.criterion_id}${rating}${curr.section_id}`
-      : `${curr.criterion_id}${rating}`;
-    if(Object.prototype.hasOwnProperty.call(acc, countKey)) {
-      acc[countKey] += 1;
-    } else {
-      acc[countKey] = 1;
-    }
-    return acc;
-  }, {});
-};
+export const countDenormalizedDataPoints = (data, withSections) => data.reduce((acc, curr) => {
+  const rating = curr.rating.replace(/\s/g, '');
+  const countKey = withSections
+    ? `${curr.criterion_id}${rating}${curr.section_id}`
+    : `${curr.criterion_id}${rating}`;
+  if (Object.prototype.hasOwnProperty.call(acc, countKey)) {
+    acc[countKey] += 1;
+  } else {
+    acc[countKey] = 1;
+  }
+  return acc;
+}, {});
 /* eslint-enable no-param-reassign */
-
 
 /**
  * Takes the payload, filters the denormalized data to make sure students do not
@@ -111,7 +108,7 @@ export const pivotHeatMapDataNoSections = (payload) => {
       name: assignment.name,
       totalAssessments: 0,
       dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
-        const dataPointCountKey = `${assignment.id}${criterion.id}${rating.description.replace(/\s/g, "")}`;
+        const dataPointCountKey = `${assignment.id}${criterion.id}${rating.description.replace(/\s/g, '')}`;
         const dataPoint = {
           criterionId: criterion.id,
           criterion: criterion.description,
@@ -149,13 +146,13 @@ export const pivotHeatMapData = (payload) => {
         sectionName: sectionObject.sectionName,
         totalAssessments: 0,
         dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
-          const dataPointCountKey = `${assignment.id}${criterion.id}${rating.description.replace(/\s/g, "")}${sectionObject.sectionId}`;
+          const dataPointCountKey = `${assignment.id}${criterion.id}${rating.description.replace(/\s/g, '')}${sectionObject.sectionId}`;
           const dataPoint = {
             criterionId: criterion.id,
             criterion: criterion.description,
             ratingDescription: rating.description,
             maxPoints: rating.points,
-            count: dataPointCounts[dataPointCountKey] ? dataPointCounts[dataPointCountKey]: 0,
+            count: dataPointCounts[dataPointCountKey] ? dataPointCounts[dataPointCountKey] : 0,
           };
           return dataPoint;
         })),
