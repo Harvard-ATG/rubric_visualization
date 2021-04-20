@@ -72,7 +72,7 @@ def denormalize(data):
         _, _, section_name = section["name"].rpartition(" ")
         section_tuple = (section['sis_section_id'], section_name)
         for student in section['students']:
-            if student['id'] not in sections_lookup.keys():
+            if student['id'] not in sections_lookup:
                 sections_lookup[student['id']] = [section_tuple]
             else:
                 sections_lookup[student['id']].append(section_tuple)
@@ -86,7 +86,7 @@ def denormalize(data):
     
         # iterate through submissions under assignments
         for submission in assignment['submissions']:
-            if 'rubric_assessment' in submission.keys() and submission['workflow_state'] == 'graded' and submission['score'] is not None:
+            if 'rubric_assessment' in submission and submission['workflow_state'] == 'graded' and submission['score'] is not None:
                 submission_id = submission['id']
                 student_id = submission['user_id']
                 student_name = students_lookup[student_id]['sortable_name']
@@ -94,7 +94,7 @@ def denormalize(data):
 
                 # iterate through criteria and ratings under submissions
                 for criterion_id, criterion_data in submission['rubric_assessment'].items():
-                    if 'points' in criterion_data.keys() and criterion_data['rating_id'] is not None:
+                    if 'points' in criterion_data and criterion_data['rating_id'] is not None:
                         score = criterion_data['points']
                         unique_criterion_id = f"{assignment_id}{criterion_id}"
                         criterion_name = criteria_lookup[unique_criterion_id]['description']
