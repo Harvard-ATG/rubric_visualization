@@ -10,6 +10,7 @@ export const initialState = {
   },
   visualizationData: {
     heatMapData: [],
+    heatMapDataNoSections: [],
   },
   processing: {
     loadingBusinessData: true,
@@ -34,7 +35,8 @@ export const initialState = {
 
 // Helper to refactor the process of updating a selector's set of choices
 const updateSelectorValues = (key, value, state) => {
-  state.controls.selectors[key].values = value;
+  // selector choices should always be unique
+  state.controls.selectors[key].values = [...new Set(value)];
   return state;
 };
 
@@ -116,6 +118,19 @@ export const reducer = (state, action) => {
         visualizationData: {
           ...state.visualizationData,
           heatMapData: action.value,
+        },
+        processing: {
+          ...state.processing,
+          pivotingHeatMap: false,
+          pivotedHeatMap: true,
+        },
+      };
+    case eventTypes.heatMapDataNoSectionsPivoted:
+      return {
+        ...state,
+        visualizationData: {
+          ...state.visualizationData,
+          heatMapDataNoSections: action.value,
         },
         processing: {
           ...state.processing,

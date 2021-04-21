@@ -7,11 +7,12 @@ import Selector from '../Selector/Selector';
 import CheckList from '../CheckBox/CheckList';
 
 import { AppContext } from '../AppState';
-import { pivotHeatMapData, squashRubricData } from '../utils';
+import { pivotHeatMapData, pivotHeatMapDataNoSections } from '../utils';
 
 import {
   heatMapDataPivoting,
   heatMapDataPivoted,
+  heatMapDataNoSectionsPivoted,
   selectorValuesUpdated,
   checkListValuesUpdated,
 } from '../eventTypes';
@@ -19,8 +20,7 @@ import {
 const switchVizData = (selection, data) => {
   switch (selection) {
     case 'Aggregated': {
-      const clonedData = JSON.parse(JSON.stringify(data.heatMapData));
-      return squashRubricData(clonedData);
+      return data.heatMapDataNoSections;
     }
     case 'By Sections':
       return data.heatMapData;
@@ -70,7 +70,19 @@ const CompareAssignmentsTab = () => {
       dispatch({
         type: checkListValuesUpdated,
         checkListKey: 'sections',
-        value: [...state.businessData.sections.map((s) => s.sis_section_id)],
+        value: [...state.businessData.sections.map((s) => s.name.split(' ').pop())],
+      });
+    }
+
+    if (
+      state.controls.selectors.showSections.selected === 'Aggregated'
+      && state.visualizationData.heatMapDataNoSections.length === 0
+    ) {
+      dispatch({ type: heatMapDataPivoting });
+      const vizDataNoSections = pivotHeatMapDataNoSections(state.businessData);
+      dispatch({
+        type: heatMapDataNoSectionsPivoted,
+        value: vizDataNoSections,
       });
     }
   });
@@ -89,7 +101,7 @@ const CompareAssignmentsTab = () => {
   if (state.controls.selectors.showSections.selected === 'By Sections') {
     filteredSectionSet = filterSection.length === state.controls.checkLists.sections.values.length
       ? filteredAssignmentSet
-      : filteredAssignmentSet.filter((rubric) => filterSection.indexOf(rubric.sectionId) !== -1);
+      : filteredAssignmentSet.filter((rubric) => filterSection.indexOf(rubric.sectionName) !== -1);
   }
 
   const loaded = !state.processing.loadingBusinessData
@@ -103,6 +115,7 @@ const CompareAssignmentsTab = () => {
         dataPoints={rubric.dataPoints}
         assignmentId={rubric.assignmentId}
         sectionId={rubric.sectionId}
+        sectionName={rubric.sectionName}
       />
     ))
   ) : (

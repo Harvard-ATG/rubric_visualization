@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 
 import { Flex, Text, View } from '@instructure/ui';
 import { drawHeatMap, drawFlatHeatMap } from '../HeatMap/HeatMap';
-import { flatData } from '../utils';
+import { flatData, truncateString } from '../utils';
 
 const AssignmentCard = (props) => {
   const {
-    assignmentName, dataPoints, assignmentId, sectionId,
+    assignmentName, dataPoints, assignmentId, sectionId, sectionName,
   } = props;
 
   const identifier = `heatMap-${assignmentId}-${sectionId || ''}`;
@@ -27,12 +27,12 @@ const AssignmentCard = (props) => {
           <Flex justifyItems="space-between">
             <Flex.Item>
               <Text size="large" weight="light">
-                {assignmentName}
+                {truncateString(assignmentName, 28)}
               </Text>
             </Flex.Item>
             <Flex.Item>
               <Text size="large" weight="light">
-                {sectionId}
+                {sectionName}
               </Text>
             </Flex.Item>
           </Flex>
@@ -45,6 +45,7 @@ const AssignmentCard = (props) => {
 
 AssignmentCard.defaultProps = {
   sectionId: null,
+  sectionName: null,
 };
 
 AssignmentCard.propTypes = {
@@ -52,6 +53,7 @@ AssignmentCard.propTypes = {
   dataPoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   assignmentId: PropTypes.number.isRequired,
   sectionId: PropTypes.string,
+  sectionName: PropTypes.string,
 };
 
 export default AssignmentCard;
