@@ -39,12 +39,12 @@ module.exports = {
     ],
   },
   plugins: [
-    new BrotliPlugin({
-      asset: '[path].br[query]',
-      test: /\.(js|css|html|svg)$/,
-      threshold: 10240,
-      minRatio: 0.8,
-    }),
+    // new BrotliPlugin({
+    //   asset: '[path].br[query]',
+    //   test: /\.(js|css|html|svg)$/,
+    //   threshold: 10240,
+    //   minRatio: 0.8,
+    // }),
   ],
   optimization: {
     minimizer: [new UglifyJsPlugin()],
