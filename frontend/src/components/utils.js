@@ -9,16 +9,6 @@ export const flatData = (data) => {
 };
 
 /**
- * Return a map of objects with sectionId and formatted sectionName
- * @param {array} sections
- * @returns array of objects
- */
-export const sectionIdNameMap = (sections) => sections.map((s) => ({
-  sectionId: s.sis_section_id,
-  sectionName: s.name.split(' ').pop(),
-}));
-
-/**
  * filter test to filter for unique student_id and criterion_id combinations
  * @param {object} curr - the current object
  * @param {int} index - the current index in the original array
@@ -91,24 +81,25 @@ export const countDenormalizedDataPoints = (data, withSections) => data.reduce((
 /* eslint-enable no-param-reassign */
 
 /**
- * Takes the payload, filters the denormalized data to make sure students do not
+ * Takes the businessData, filters the denormalized data to make sure students do not
  * appear in more than one section. Returns an array of rubric data based on assignment.
- * @param {array} payload all the data that is provided to state.payload
+ * @param {object} businessData all the data that is provided to state.businessData
  * @returns array
  */
-export const pivotHeatMapDataNoSections = (payload) => {
+export const pivotHeatMapDataNoSections = (businessData) => {
   // filter denormalized data so students dont appear in more than one section
   // TODO : filteredDenormalizedData is O(n^2) and could be optimized perhaps with a hash table?
-  const filteredDenormalizedData = payload.denormalized_data.filter(uniqueStudentCriteria);
+  const filteredDenormalizedData = businessData.denormalized_data.filter(uniqueStudentCriteria);
   const dataPointCounts = countDenormalizedDataPoints(filteredDenormalizedData, false);
+  const assignments = Object.values(businessData.rubric_assignments);
 
-  const allRubrics = payload.assignments.map((assignment) => {
+  const allRubrics = assignments.map((assignment) => {
     const rubric = {
       assignmentId: assignment.id,
       name: assignment.name,
       totalAssessments: 0,
       dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
-        const dataPointCountKey = `${assignment.id}${criterion.id}${rating.description.replace(/\s/g, '')}`;
+        const dataPointCountKey = `${criterion.id}${rating.description.replace(/\s/g, '')}`;
         const dataPoint = {
           criterionId: criterion.id,
           criterion: criterion.description,
@@ -127,26 +118,28 @@ export const pivotHeatMapDataNoSections = (payload) => {
 };
 
 /**
- * Takes the payload, pivots the data to represent rubrics based on assigment and section.
- * @param {array} payload all the data that is provided to state.payload
+ * Takes the businessData, pivots the data to represent rubrics based on assigment and section.
+ * @param {object} businessData all the data that is provided to state.businessData
  * @returns array
  */
-export const pivotHeatMapData = (payload) => {
-  const sections = sectionIdNameMap(payload.sections);
-  const dataPointCounts = countDenormalizedDataPoints(payload.denormalized_data, true);
+export const pivotHeatMapData = (businessData) => {
+  
+  const sections = Object.values(businessData.sections);
+  const assignments = Object.values(businessData.rubric_assignments);
+  const dataPointCounts = countDenormalizedDataPoints(businessData.denormalized_data, true);
 
-  const allRubrics = payload.assignments.map((assignment) => {
+  const allRubrics = assignments.map((assignment) => {
     const rubrics = [];
     sections.forEach((sectionObject) => {
       const rubric = {
         assignmentId: assignment.id,
         name: assignment.name,
         dueDate: assignment.due_at,
-        sectionId: sectionObject.sectionId,
-        sectionName: sectionObject.sectionName,
+        sectionId: sectionObject.id,
+        sectionName: sectionObject.short_name,
         totalAssessments: 0,
         dataPoints: assignment.rubric.map((criterion) => criterion.ratings.map((rating) => {
-          const dataPointCountKey = `${assignment.id}${criterion.id}${rating.description.replace(/\s/g, '')}${sectionObject.sectionId}`;
+          const dataPointCountKey = `${criterion.id}${rating.description.replace(/\s/g, '')}${sectionObject.id}`;
           const dataPoint = {
             criterionId: criterion.id,
             criterion: criterion.description,
