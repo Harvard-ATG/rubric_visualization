@@ -6,6 +6,7 @@ from canvas_sdk.methods import submissions, assignments, courses, sections
 from canvas_sdk.utils import get_all_list_data
 from canvas_sdk import RequestContext
 from rubric_visualization.decorators import api_login_required, api_canvas_oauth_token_exception
+from django.core.cache import cache
 
 import logging
 
@@ -41,6 +42,7 @@ def course_data(request, course_id):
         'sections': sections_list
     }
     payload['denormalized_data'] = denormalize(payload)
+    cache.set(course_id, payload)
     return JsonResponse(payload)
 
     
