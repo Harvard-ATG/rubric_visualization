@@ -176,15 +176,12 @@ def get_assignments_list(request_context, course_id):
     https://canvas.instructure.com/doc/api/assignments.html#method.assignments_api.index 
     """
     
-    keys = ("id", "name", "due_at", "rubric")
     results = get_all_list_data(
         request_context,
         assignments.list_assignments,
         course_id,
         ""
         )
-    # returned_assignments = list(filter(lambda x: "rubric" in x, results))
-    # return [{k: assignment[k] for k in keys} for assignment in returned_assignments]
     return list(filter(lambda x: "rubric" in x, results))
     
 
