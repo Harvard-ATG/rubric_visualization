@@ -123,7 +123,6 @@ export const pivotHeatMapDataNoSections = (businessData) => {
  * @returns array
  */
 export const pivotHeatMapData = (businessData) => {
-  
   const sections = Object.values(businessData.sections);
   const assignments = Object.values(businessData.rubric_assignments);
   const dataPointCounts = countDenormalizedDataPoints(businessData.denormalized_data, true);

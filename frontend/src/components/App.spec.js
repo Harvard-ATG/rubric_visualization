@@ -8,7 +8,7 @@ import App from './App';
 describe('My Test Suite', () => {
   it('Tests with axe-core', async (done) => {
     global.django = { course_id: 12345 };
-    jest.setTimeout(15000);
+    jest.setTimeout(31000);
     global.fetch = await mockFetchSuccess(testBusinessData);
     const appComponent = await mountToDoc(<App />);
     const appNode = appComponent.getDOMNode();

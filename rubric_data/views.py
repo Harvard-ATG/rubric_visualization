@@ -62,6 +62,9 @@ def course_data(request, course_id):
 
 
 def students_sections_tuple(sections_list):
+    """Iterate over a list of sections and return  a tuple of dictionaries 
+    of Student(s) and Section(s) respectively
+    """
     students = {}
     sections = {}
 
@@ -86,6 +89,11 @@ def students_sections_tuple(sections_list):
     return students, sections
 
 def rubric_assignments_dict(assignments_list):
+    """Iterate over a list of assignments and return a dict of RubricAssignment(s) 
+    keyed by their assignment_ids.
+    'rubric' is a list of Criterion(s).
+    'ratings' is a list of Rating(s)
+    """
     rubric_assignments = {}
 
     for assignment in assignments_list:
@@ -111,6 +119,7 @@ def rubric_assignments_dict(assignments_list):
 
 
 def datapoints_list(criteria_dict, students_dict, submissions):
+    """Iterates over a list of submissions and returns a list of Datapoint(s)."""
     output = []
     for assignment in submissions:
         for submission in assignment["submissions"]:
@@ -136,8 +145,7 @@ def datapoints_list(criteria_dict, students_dict, submissions):
 
 def get_rating_info(criterion_id, score, criteria_lookup):
     """
-    Add docstring
-    Returns tuple of rating description, and rating "max points"
+    Returns the rating description that matches the points assessed for the criterion.
     """
     criterion_info = criteria_lookup[criterion_id]
     criterion_info['ratings'].sort(reverse=False, key=lambda x: x['points'])
@@ -147,38 +155,43 @@ def get_rating_info(criterion_id, score, criteria_lookup):
     return None
 
 def get_sections_list(request_context, course_id):
+    """
+    Returns a list of sections for the course.
+    https://canvas.instructure.com/doc/api/sections.html#method.sections_api.index
+    """
     results = get_all_list_data(
         request_context,
         sections.list_course_sections,
         course_id,
-        'students'
+        "students"
     )
     returned_sections = filter(lambda x: x['students'] is not None, results)
     return list(returned_sections)
    
     
 def get_assignments_list(request_context, course_id):
-    '''
+    """
     Returns a list of assignments for the course.
     https://canvas.instructure.com/doc/api/assignments.html#method.assignments_api.index 
-    '''
+    """
     
-    keys = ('id', 'name', 'due_at', 'rubric', 'rubric_settings') # reduce the clutter
+    keys = ("id", "name", "due_at", "rubric")
     results = get_all_list_data(
         request_context,
         assignments.list_assignments,
         course_id,
-        ''
+        ""
         )
-    returned_assignments = list(filter(lambda x: 'rubric' in x, results))
-    return [{k: assignment[k] for k in keys} for assignment in returned_assignments]
+    # returned_assignments = list(filter(lambda x: "rubric" in x, results))
+    # return [{k: assignment[k] for k in keys} for assignment in returned_assignments]
+    return list(filter(lambda x: "rubric" in x, results))
     
 
 def get_submissions_with_rubric_assessments(request_context, course_id, assignment_ids):
-    '''
+    """
     Returns the submission and rubric assessment data for each assignment.
     https://canvas.instructure.com/doc/api/submissions.html#method.submissions_api.index
-    '''
+    """
     include = "rubric_assessment"
     results = []
     for assignment_id in assignment_ids:
@@ -198,6 +211,7 @@ def get_submissions_with_rubric_assessments(request_context, course_id, assignme
 
 
 def valid_submissions(submission):
+    """Returns boolean check on a submission object"""
     return ('rubric_assessment' in submission
         and submission['workflow_state'] == 'graded'
         and submission['score'] is not None)

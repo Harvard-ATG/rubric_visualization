@@ -19,7 +19,8 @@ describe('<CompareAssignmentsTab />', () => {
   });
 
   it('component mounts with 22 vis cards', async () => {
-    const sections = testBusinessData.sections.map((s) => s.sis_section_id);
+    const sectionsArray = Object.values(testBusinessData.sections);
+    const sections = sectionsArray.map((s) => s.sis_section_id);
     const newState = {
       ...initialState,
       businessData: testBusinessData,
