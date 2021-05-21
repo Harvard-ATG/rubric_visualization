@@ -17,6 +17,7 @@ from .domain_model import (
 )
 
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -121,6 +122,7 @@ def rubric_assignments_dict(assignments_list):
 def datapoints_list(criteria_dict, students_dict, submissions):
     """Iterates over a list of submissions and returns a list of Datapoint(s)."""
     output = []
+    
     for assignment in submissions:
         for submission in assignment["submissions"]:
             for criterion_id, criterion_data in submission["rubric_assessment"].items():
