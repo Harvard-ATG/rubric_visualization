@@ -6,7 +6,7 @@ export const AppContext = React.createContext(null);
 
 export const initialState = {
   businessData: {
-    assignments: [], submissions: [], students: [], sections: [], denormalized_data: [],
+    rubric_assignments: {}, students: {}, sections: {}, denormalized_data: [],
   },
   visualizationData: {
     heatMapData: [],
