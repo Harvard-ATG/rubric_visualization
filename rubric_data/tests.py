@@ -1,10 +1,10 @@
-from django.conf import settings
 from django.test import TestCase
-from .views import (
+
+from .domain_model import (
+    datapoints_list,
     get_rating_info,
-    students_sections_tuple,
     rubric_assignments_dict,
-    datapoints_list
+    students_sections_tuple,
     )
 from .test_data.mock_data import (
     MOCK_SECTIONS_LIST,
@@ -65,10 +65,12 @@ def generate_test_data(example_json):
     students_dict = example_json[students]
     denormalied_data_list = example_json[denormalied_data]
 
-    for k, v in students_dict.items():
+    random_int_sample = random.sample(range(10000, 90000), k=len(students_dict))
+
+    for idx, (k, v) in enumerate(students_dict.items()):
         student_scrub_map[k] = {
             "old_id": v["id"],
-            "new_id": random.randint(10000, 90000),
+            "new_id": random_int_sample[idx],
             "new_name": random_sortable_name()
         }
    
