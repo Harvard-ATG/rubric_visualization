@@ -11,6 +11,9 @@ module.exports = {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, './static/frontend/'),
   },
+  devServer: {
+    writeToDisk: true,
+  },
   module: {
     rules: [
       {
