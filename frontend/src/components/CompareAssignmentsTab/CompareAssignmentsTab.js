@@ -70,7 +70,7 @@ const CompareAssignmentsTab = () => {
       dispatch({
         type: checkListValuesUpdated,
         checkListKey: 'sections',
-        value: [...state.businessData.sections.map((s) => s.name.split(' ').pop())],
+        value: [...Object.values(state.businessData.sections).map((s) => s.short_name)],
       });
     }
 

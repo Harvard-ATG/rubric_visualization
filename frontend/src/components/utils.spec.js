@@ -2,7 +2,6 @@ import {
   flatData,
   pivotHeatMapData,
   pivotHeatMapDataNoSections,
-  sectionIdNameMap,
   truncateString,
   countDenormalizedDataPoints,
   uniqueStudentCriteria,
@@ -44,34 +43,6 @@ describe('utility functions', () => {
     expect(noSectionsFiltered[0].dataPoints[0][0].count).toEqual(0);
     expect(noSectionsFiltered[0].dataPoints[0][1].count).toEqual(4);
     expect(noSectionsFiltered[0].dataPoints[0][2].count).toEqual(73);
-  });
-
-  it('sectionIdNameMap a map of objects with sectionId and formatted sectionName', () => {
-    const sectionData = [
-      {
-        sis_section_id: 1,
-        name: 'Something Something 01',
-        students: [1, 2, 3, 4, 5],
-        purpose: 'Not sure',
-      },
-      {
-        sis_section_id: 2,
-        name: 'Something Something D001',
-        students: [1],
-        purpose: 'Totally sure',
-      },
-      {
-        sis_section_id: 3,
-        name: 'Something Something D002',
-        students: [2, 3, 4, 5],
-        purpose: 'Somewhat sure',
-      },
-    ];
-    const sectionsMap = sectionIdNameMap(sectionData);
-    expect(sectionsMap.length).toEqual(3);
-    expect(sectionsMap[0].sectionName).toEqual('01');
-    expect(sectionsMap[1].sectionName).toEqual('D001');
-    expect(sectionsMap[2].sectionId).toEqual(3);
   });
 
   it('truncateString() truncates when a string is too long', () => {
