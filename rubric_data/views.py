@@ -28,6 +28,7 @@ def course_data(request, course_id):
     
     access_token = get_oauth_token(request)
     request_context = RequestContext(**settings.CANVAS_SDK_SETTINGS, auth_token=access_token)
+    # request.user object returns the username
     cache_user_id_course_id = f"{request.user}{course_id}"
 
     try:
