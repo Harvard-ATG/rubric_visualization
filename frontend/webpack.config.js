@@ -11,7 +11,7 @@ module.exports = {
     path: path.resolve(__dirname, './static/frontend/'),
   },
   devServer: {
-    hot:true
+    writeToDisk: true,
   },
   module: {
     rules: [
