@@ -278,3 +278,5 @@ CANVAS_SDK_SETTINGS = {
     'max_retries': 3,
     'per_page': 100,
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
