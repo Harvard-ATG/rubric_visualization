@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-from django.conf import settings
 from django.test import TestCase, override_settings
+
 from django.core.cache import cache
-from .views import denormalize, get_rating_info, create_cache
-
-import json
-import uuid
-import random
-=======
-from django.test import TestCase
-
+from .views import create_cache
 from .domain_model import (
     datapoints_list,
     get_rating_info,
@@ -26,7 +18,7 @@ from .test_data.mock_data import (
 import json
 import random
 import string
->>>>>>> master
+import uuid
 
 
 class ViewTests(TestCase):
