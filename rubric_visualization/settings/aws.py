@@ -19,7 +19,8 @@ CACHES = {
         'BACKEND': 'redis_cache.RedisCache',
         'LOCATION': "redis://%s:%s/0" % (REDIS_HOST, REDIS_PORT),
         'OPTIONS': {
-            'PARSER_CLASS': 'redis.connection.HiredisParser'
+            'PARSER_CLASS': 'redis.connection.HiredisParser',
+            'SERIALIZER_CLASS': 'redis_cache.serializers.JSONSerializer' #https://django-redis-cache.readthedocs.io/en/latest/advanced_configuration.html#pluggable-serializers
         },
         'KEY_PREFIX': 'rubric_visualization',  # Provide a unique value for intra-app cache
         'TIMEOUT': SECURE_SETTINGS.get('default_cache_timeout_secs', 300),

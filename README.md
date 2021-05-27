@@ -29,6 +29,8 @@ $ ./manage.py runserver
 # new terminal at project root
 $ cd frontend && npm install
 $ npm run watch
+# new terminal at project root
+$ redis-server
 ```
 Then navigate to where Django is serving content.
 

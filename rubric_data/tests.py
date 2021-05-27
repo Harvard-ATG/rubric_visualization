@@ -1,5 +1,7 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
+from django.core.cache import cache
+from .views import create_cache
 from .domain_model import (
     datapoints_list,
     get_rating_info,
@@ -16,6 +18,7 @@ from .test_data.mock_data import (
 import json
 import random
 import string
+import uuid
 
 
 class ViewTests(TestCase):
@@ -53,6 +56,19 @@ class ViewTests(TestCase):
         self.assertEqual(denormalized_data[6]["score"], 2)
         self.assertEqual(denormalized_data[6]["rating"], "Not Good enough")
 
+    # https://docs.djangoproject.com/en/3.2/topics/cache/#local-memory-caching
+    # https://docs.djangoproject.com/en/3.2/topics/testing/tools/#django.test.override_settings
+    # override_settings is used to override the cache to use local memory instead of redis for testing
+    @override_settings(CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}})
+    def test_create_cache(self):
+        user_id = uuid.uuid4().hex
+        course_id = random.randint(10000, 99999)
+        cache_user_id_course_id  = f"{user_id}{course_id}"
+        test_payload = {'rating_id': f'_{random.randint(1000, 9999)}', 'comments': '', 'points': 6.0}
+
+        create_cache(cache_user_id_course_id, test_payload)
+        result = cache.get(cache_user_id_course_id)
+        self.assertEqual(result, test_payload)
         
 
 # TODO this should be a management command

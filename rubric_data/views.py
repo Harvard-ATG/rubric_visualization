@@ -5,6 +5,7 @@ from canvas_sdk.exceptions import CanvasAPIError
 from canvas_sdk.methods import submissions, assignments, sections
 from canvas_sdk.utils import get_all_list_data
 from canvas_sdk import RequestContext
+from django.core.cache import cache
 from rubric_visualization.decorators import (
     api_login_required,
     api_canvas_oauth_token_exception
@@ -27,6 +28,8 @@ def course_data(request, course_id):
     
     access_token = get_oauth_token(request)
     request_context = RequestContext(**settings.CANVAS_SDK_SETTINGS, auth_token=access_token)
+    # request.user object returns the username
+    cache_user_id_course_id = f"{request.user}{course_id}"
 
     try:
         assignments = get_assignments_list(request_context, course_id)
@@ -57,7 +60,7 @@ def course_data(request, course_id):
         "rubric_assignments": rubric_assignments,
         "denormalized_data": datapoints
     }
-
+    create_cache(cache_user_id_course_id, payload)
     return JsonResponse(payload)
 
 
@@ -113,6 +116,8 @@ def get_submissions_with_rubric_assessments(request_context, course_id, assignme
         })
     return results
 
+def create_cache(cache_user_id_course_id, payload):
+    cache.set(cache_user_id_course_id, payload)
 
 def valid_submissions(submission):
     """Returns boolean check on a submission object"""
