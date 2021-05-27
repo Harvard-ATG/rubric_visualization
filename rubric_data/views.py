@@ -19,6 +19,7 @@ def course_data(request, course_id):
     
     access_token = get_oauth_token(request)
     request_context = RequestContext(**settings.CANVAS_SDK_SETTINGS, auth_token=access_token)
+    cache_user_id_course_id = f"{request.user}{course_id}"
 
     try:
         students = get_students_list(request_context, course_id)
@@ -42,7 +43,7 @@ def course_data(request, course_id):
         'sections': sections_list
     }
     payload['denormalized_data'] = denormalize(payload)
-    cache.set(course_id, payload)
+    create_cache(cache_user_id_course_id, payload)
     return JsonResponse(payload)
 
     
@@ -196,3 +197,6 @@ def get_submissions_with_rubric_assessments(request_context, course_id, assignme
             "submissions": list_data,
         })
     return results
+
+def create_cache(cache_user_id_course_id, payload):
+    cache.set(cache_user_id_course_id, payload)
