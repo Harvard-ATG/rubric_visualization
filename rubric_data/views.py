@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.conf import settings
 from canvas_oauth.oauth import get_oauth_token
 from canvas_sdk.exceptions import CanvasAPIError
@@ -16,10 +16,16 @@ from .domain_model import (
     rubric_assignments_dict,
     students_sections_tuple,
     )
+from .exceptions import StudentsSectionsError, RubricAssignmentsError, DatapointsError
 
 import logging
+from http import HTTPStatus
 
 logger = logging.getLogger(__name__)
+
+
+class HttpResponseNoContent(HttpResponse):
+    status_code = HTTPStatus.NO_CONTENT
 
 
 @api_canvas_oauth_token_exception
@@ -41,19 +47,25 @@ def course_data(request, course_id):
             )
         sections_list = get_sections_list(request_context, course_id)
     except CanvasAPIError as e:
-        msg = f"Canvas API error {e.status_code}"
+        msg = f"Course ({course_id}) -- Canvas API error {e.status_code}"
         logger.exception(msg)
-        return JsonResponse({"message": msg}, status=500)
-
-    students_dict, sections_dict = students_sections_tuple(sections_list)
-    rubric_assignments = rubric_assignments_dict(assignments)
-
-    criteria_lookup = { criterion["id"]: criterion
-        for assignment in rubric_assignments
-        for criterion in rubric_assignments[assignment]["rubric"]
-    }
+        return HttpResponseBadRequest()
     
-    datapoints = datapoints_list(criteria_lookup, students_dict, submissions)
+    try:
+        students_dict, sections_dict = students_sections_tuple(sections_list)
+        rubric_assignments = rubric_assignments_dict(assignments)
+
+        criteria_lookup = { criterion["id"]: criterion
+            for assignment in rubric_assignments
+            for criterion in rubric_assignments[assignment]["rubric"]
+        }
+    
+        datapoints = datapoints_list(criteria_lookup, students_dict, submissions)
+    except (StudentsSectionsError, RubricAssignmentsError, DatapointsError) as e:
+        msg = f"Course ({course_id}) -- {e.__class__.__name__}: {e.message}"
+        logger.exception(msg)
+        return HttpResponseNoContent()
+
     payload = {
         "students": students_dict,
         "sections": sections_dict,
@@ -75,7 +87,10 @@ def get_sections_list(request_context, course_id):
         course_id,
         "students"
     )
-    returned_sections = filter(lambda x: x['students'] is not None, results)
+    try:
+        returned_sections = filter(lambda x: x['students'] is not None, results)
+    except KeyError:
+        return []
     return list(returned_sections)
    
     
@@ -116,11 +131,13 @@ def get_submissions_with_rubric_assessments(request_context, course_id, assignme
         })
     return results
 
+
 def create_cache(cache_user_id_course_id, payload):
     cache.set(cache_user_id_course_id, payload)
 
+
 def valid_submissions(submission):
     """Returns boolean check on a submission object"""
-    return ('rubric_assessment' in submission
-        and submission['workflow_state'] == 'graded'
-        and submission['score'] is not None)
+    return ("rubric_assessment" in submission
+        and submission["workflow_state"] == "graded"
+        and submission["score"] is not None)

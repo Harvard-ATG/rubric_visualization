@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -19,7 +20,13 @@ class IndexView(LTIAuthMixin, LoginRequiredMixin, TemplateView):
         # to the list setting LTI_PROPERTY_LIST_EX
         # We will probably pass the role in the future as well. It may dictate 
         # what the user sees.
+        
+        local = False
+        if settings.WEBPACK_DEV:
+            local = True
+
         return {
             'course_id': self.request.session['custom_canvas_course_id'],
-            'is_student': self.lti.lis_result_sourcedid(self.request)
+            'is_student': self.lti.lis_result_sourcedid(self.request),
+            'local': local
         }
