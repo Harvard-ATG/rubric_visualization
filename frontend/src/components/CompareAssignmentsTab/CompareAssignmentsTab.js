@@ -105,7 +105,8 @@ const CompareAssignmentsTab = () => {
   }
 
   const loaded = !state.processing.loadingBusinessData
-    && state.visualizationData.heatMapData.length !== 0;
+    && state.visualizationData.heatMapData.length !== 0
+    && state.processing.error === false;
 
   const card = loaded ? (
     filteredSectionSet.map((rubric) => (

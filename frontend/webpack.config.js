@@ -9,9 +9,10 @@ module.exports = {
   output: {
     filename: '[name].bundle.js',
     path: path.resolve(__dirname, './static/frontend/'),
+    publicPath: '/static/frontend/',
   },
   devServer: {
-    writeToDisk: true,
+    writeToDisk: false,
   },
   module: {
     rules: [

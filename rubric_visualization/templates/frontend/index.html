@@ -16,6 +16,12 @@
         course_id: {{ course_id }}
     };
 </script>
-<script src="{% static 'frontend/vendors~index.bundle.js' %}"></script>
-<script src="{% static 'frontend/index.bundle.js' %}"></script>
+{% if local == True %}
+    <script src="http://localhost:8080{% static 'frontend/vendors~index.bundle.js' %}"></script>
+    <script src="http://localhost:8080{% static 'frontend/index.bundle.js' %}"></script>
+{% else %}
+    <script src="{% static 'frontend/vendors~index.bundle.js' %}"></script>
+    <script src="{% static 'frontend/index.bundle.js' %}"></script>
+{% endif %}
+
 </html>
