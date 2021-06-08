@@ -14,7 +14,7 @@ const App = () => {
   useEffect(() => {
     fetch(`data/${window.django.course_id}`)
       .then((response) => {
-        if (response.status >= 400 || response.status === 204) {
+        if (response.status >= 400) {
           return Promise.reject(response.statusText);
         }
         return response.json();

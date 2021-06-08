@@ -13,7 +13,7 @@ const ErrorCard = () => {
     case 'Bad Request':
       message = 'There was an issue requesting data from the Canvas API.';
       break;
-    case 'No Content':
+    case 'Internal Server Error':
       message = 'The data supplied from Canvas was either insufficient, or not in the correct format to support this tool.';
       break;
     default:

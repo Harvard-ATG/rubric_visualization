@@ -33,7 +33,7 @@ describe('<ErrorCard />', () => {
         ...initialState.processing,
         loadingBusinessData: false,
         error: true,
-        errorMessage: 'No Content',
+        errorMessage: 'Internal Server Error',
       },
     };
 

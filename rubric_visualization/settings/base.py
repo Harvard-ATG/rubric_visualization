@@ -280,3 +280,10 @@ CANVAS_SDK_SETTINGS = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+# Application settings
+# Convenience settings for our own uses
+
+# Is the frontend being run with webpack-dev-server?
+# If set to True, we will serve bundles from localhost:8080
+WEBPACK_DEV = False 

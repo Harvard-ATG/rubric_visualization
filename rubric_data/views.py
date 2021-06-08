@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponseBadRequest, HttpResponseServerError, JsonResponse
 from django.conf import settings
 from canvas_oauth.oauth import get_oauth_token
 from canvas_sdk.exceptions import CanvasAPIError
@@ -22,10 +22,6 @@ import logging
 from http import HTTPStatus
 
 logger = logging.getLogger(__name__)
-
-
-class HttpResponseNoContent(HttpResponse):
-    status_code = HTTPStatus.NO_CONTENT
 
 
 @api_canvas_oauth_token_exception
@@ -64,7 +60,7 @@ def course_data(request, course_id):
     except (StudentsSectionsError, RubricAssignmentsError, DatapointsError) as e:
         msg = f"Course ({course_id}) -- {e.__class__.__name__}: {e.message}"
         logger.exception(msg)
-        return HttpResponseNoContent()
+        return HttpResponseServerError()
 
     payload = {
         "students": students_dict,
