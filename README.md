@@ -1,5 +1,7 @@
 # Rubric Visualization
 
+This repository is no longer maintained or developed by Harvard Academic Technology.
+
 ## Requirements
 - Python 3
 - Node v12.15.0
