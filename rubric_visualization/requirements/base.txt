@@ -1,7 +1,7 @@
 Django~=3.2.0
 psycopg2==2.8.4
 django-redis-cache==2.1.0
-redis==3.4.1
+redis==4.4.4
 hiredis==1.0.1
 django-lti-provider==0.4.3
 git+https://github.com/penzance/canvas_python_sdk@v1.2.0#egg=canvas_python_sdk==1.2.0
